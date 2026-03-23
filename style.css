@@ -1,0 +1,375 @@
+/*
+Theme Name: Santagatesi nel Mondo
+Theme URI: https://santagatesinelmondo.it
+Author: Jules
+Author URI: https://santagatesinelmondo.it
+Description: A highly modular, optimized, custom WordPress theme for Santagatesi nel Mondo, featuring a modern glassmorphism design and parallax elements.
+Version: 1.0.0
+Requires at least: 5.8
+Tested up to: 6.3
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: santagatesi
+*/
+
+/* -------------------------------------------------------------------------- */
+/* CSS Variables
+/* -------------------------------------------------------------------------- */
+:root {
+	/* Colors */
+	--color-bg-dark: #0f172a;
+	--color-primary: #1e293b;
+	--color-accent: #3b82f6;
+	--color-text-light: #f8fafc;
+	--color-text-muted: #cbd5e1;
+
+	/* Glassmorphism */
+	--glass-bg: rgba(255, 255, 255, 0.05);
+	--glass-border: rgba(255, 255, 255, 0.1);
+	--glass-blur: blur(10px);
+	--glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+	/* Typography */
+	--font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+	/* Spacing */
+	--spacing-sm: 1rem;
+	--spacing-md: 2rem;
+	--spacing-lg: 4rem;
+	--spacing-xl: 6rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Resets & Base Styles
+/* -------------------------------------------------------------------------- */
+*, *::before, *::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: var(--font-main);
+	background-color: var(--color-bg-dark);
+	color: var(--color-text-light);
+	line-height: 1.6;
+	overflow-x: hidden;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+a {
+	color: var(--color-accent);
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+
+a:hover {
+	color: var(--color-text-light);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+	font-weight: 700;
+	line-height: 1.2;
+	margin-bottom: var(--spacing-sm);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Layout & Grid System
+/* -------------------------------------------------------------------------- */
+.container {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 var(--spacing-sm);
+}
+
+.section {
+	padding: var(--spacing-lg) 0;
+}
+
+/* Flexbox Utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-4 { gap: 1rem; }
+.gap-8 { gap: 2rem; }
+
+/* Grid Utilities */
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+
+@media (min-width: 768px) {
+	.md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+	.lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	.lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Components
+/* -------------------------------------------------------------------------- */
+
+/* Glass Panel */
+.glass-panel {
+	background: var(--glass-bg);
+	backdrop-filter: var(--glass-blur);
+	-webkit-backdrop-filter: var(--glass-blur);
+	border: 1px solid var(--glass-border);
+	border-radius: 16px;
+	padding: var(--spacing-md);
+	box-shadow: var(--glass-shadow);
+}
+
+/* Buttons */
+.btn {
+	display: inline-block;
+	padding: 0.75rem 1.5rem;
+	border-radius: 8px;
+	font-weight: 600;
+	text-align: center;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.btn-primary {
+	background-color: var(--color-accent);
+	color: #fff;
+	border: none;
+}
+
+.btn-primary:hover {
+	background-color: #2563eb;
+	color: #fff;
+}
+
+.btn-glass {
+	background: var(--glass-bg);
+	backdrop-filter: var(--glass-blur);
+	border: 1px solid var(--glass-border);
+	color: var(--color-text-light);
+}
+
+.btn-glass:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header & Navigation
+/* -------------------------------------------------------------------------- */
+.site-header {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 1000;
+	transition: all 0.3s ease;
+}
+
+.site-header.glass-panel {
+	border-radius: 0;
+	border-left: none;
+	border-right: none;
+	border-top: none;
+	padding: var(--spacing-sm) 0;
+}
+
+.site-branding .site-title a {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--color-text-light);
+}
+
+.main-navigation ul {
+	list-style: none;
+	display: flex;
+	gap: 1.5rem;
+}
+
+.main-navigation a {
+	color: var(--color-text-light);
+	font-weight: 500;
+}
+
+.main-navigation a:hover {
+	color: var(--color-accent);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Hero Section (Parallax)
+/* -------------------------------------------------------------------------- */
+.hero-section {
+	position: relative;
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-attachment: fixed;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	padding-top: 80px; /* Offset for header */
+}
+
+/* Overlay for parallax background to improve readability */
+.hero-section::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(15, 23, 42, 0.6); /* Dark blue overlay */
+	z-index: 1;
+}
+
+.hero-content {
+	position: relative;
+	z-index: 2;
+	text-align: center;
+	max-width: 800px;
+}
+
+.hero-title {
+	font-size: 3rem;
+	margin-bottom: var(--spacing-md);
+}
+
+.hero-subtitle {
+	font-size: 1.25rem;
+	color: var(--color-text-muted);
+	margin-bottom: var(--spacing-lg);
+}
+
+@media (min-width: 768px) {
+	.hero-title {
+		font-size: 4rem;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sections Specific Styles
+/* -------------------------------------------------------------------------- */
+
+/* Webcam Grid */
+.webcam-container {
+	position: relative;
+	padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+	height: 0;
+	overflow: hidden;
+	border-radius: 8px;
+}
+
+.webcam-container iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+/* News Cards */
+.news-card {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.news-thumbnail {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 8px 8px 0 0;
+	margin-bottom: var(--spacing-sm);
+}
+
+.news-content {
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.news-title {
+	font-size: 1.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.news-excerpt {
+	color: var(--color-text-muted);
+	margin-bottom: 1rem;
+	flex-grow: 1;
+}
+
+/* Video Grid */
+.video-card {
+	overflow: hidden;
+}
+
+.video-thumbnail-container {
+	position: relative;
+	padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+	height: 0;
+	overflow: hidden;
+	border-radius: 8px 8px 0 0;
+}
+
+.video-thumbnail-container img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.video-play-icon {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 48px;
+	height: 48px;
+	background: rgba(0, 0, 0, 0.7);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 24px;
+	opacity: 0.8;
+	transition: opacity 0.3s ease;
+}
+
+.video-thumbnail-container:hover .video-play-icon {
+	opacity: 1;
+}
+
+/* Facebook CTA */
+.facebook-cta {
+	text-align: center;
+}
+
+.facebook-icon {
+	font-size: 3rem;
+	color: #1877F2; /* Facebook Blue */
+	margin-bottom: var(--spacing-sm);
+}
+
+/* Footer */
+.site-footer {
+	padding: var(--spacing-md) 0;
+	border-top: 1px solid var(--glass-border);
+	text-align: center;
+	color: var(--color-text-muted);
+}
