@@ -24,47 +24,47 @@ $days_in_month = cal_days_in_month(CAL_GREGORIAN, date('m'), date('Y'));
 $first_day = date('w', strtotime(date('Y-m-01')));
 ?>
 
-<main id="primary" class="site-main">
+<main id="primary" class="site-main bg-[var(--color-surface)]">
 
-	<section class="section py-20 bg-gradient-to-b from-[#0f172a] to-blue-900/20">
+	<section class="section py-24">
 		<div class="container">
-			<header class="text-center mb-16">
-				<h1 class="text-4xl md:text-5xl font-bold mb-4 flex items-center justify-center gap-3 text-white">
-					<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+			<header class="text-center mb-20">
+				<h1 class="text-5xl md:text-6xl font-bold mb-6 flex items-center justify-center gap-4 text-[var(--color-primary)] font-display">
+					<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--color-accent)]"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
 					Calendario Eventi
 				</h1>
-				<p class="text-xl text-blue-200">Non perderti i prossimi appuntamenti a Sant'Agata di Puglia.</p>
+				<p class="text-xl text-[var(--color-on-surface-muted)] font-body">Non perderti i prossimi appuntamenti a Sant'Agata di Puglia.</p>
 			</header>
 
 			<div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
 
-				<!-- CSS UI Calendar Sidebar (Visual only, no JS logic needed for UI demo) -->
-				<div class="lg:col-span-1 glass-panel p-6 sticky top-24">
-					<div class="flex justify-between items-center mb-6 text-white font-bold text-lg border-b border-white/10 pb-4">
-						<button class="hover:text-blue-400 transition">&larr;</button>
+				<!-- CSS UI Calendar Sidebar -->
+				<div class="lg:col-span-1 tonal-panel p-8 sticky top-32 bg-white">
+					<div class="flex justify-between items-center mb-8 text-[var(--color-primary)] font-bold text-xl border-b border-[var(--color-surface-container-low)] pb-4 font-display">
+						<button class="hover:text-[var(--color-accent)] transition-colors w-8 h-8 rounded-full hover:bg-[var(--color-surface)] flex items-center justify-center">&larr;</button>
 						<span class="capitalize"><?php echo $current_month . ' ' . $current_year; ?></span>
-						<button class="hover:text-blue-400 transition">&rarr;</button>
+						<button class="hover:text-[var(--color-accent)] transition-colors w-8 h-8 rounded-full hover:bg-[var(--color-surface)] flex items-center justify-center">&rarr;</button>
 					</div>
 
-					<div class="grid grid-cols-7 gap-2 text-center text-sm font-semibold text-blue-300 mb-2">
+					<div class="grid grid-cols-7 gap-2 text-center text-sm font-semibold text-[var(--color-on-surface-muted)] mb-4 font-body uppercase tracking-wider">
 						<div>Dom</div><div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div>
 					</div>
 
-					<div class="grid grid-cols-7 gap-2 text-center text-white/70">
+					<div class="grid grid-cols-7 gap-2 text-center text-[var(--color-on-surface)] font-body">
 						<?php
 						// Empty days offset
-						for ($i = 0; $i < $first_day; $i++) { echo '<div class="p-2 opacity-20">-</div>'; }
+						for ($i = 0; $i < $first_day; $i++) { echo '<div class="p-2 opacity-30 text-gray-400">-</div>'; }
 
 						// Actual days
 						for ($day = 1; $day <= $days_in_month; $day++) {
-							$is_today = ($day == date('j')) ? 'bg-blue-600 text-white rounded-full font-bold shadow-lg' : 'hover:bg-white/10 rounded-full cursor-pointer transition';
-							echo '<div class="p-2 ' . $is_today . '">' . $day . '</div>';
+							$is_today = ($day == date('j')) ? 'bg-[var(--color-primary)] text-white rounded-full font-bold shadow-md' : 'hover:bg-[var(--color-surface-container-low)] rounded-full cursor-pointer transition-colors hover:text-[var(--color-primary)] font-medium';
+							echo '<div class="p-2 w-10 h-10 mx-auto flex items-center justify-center ' . $is_today . '">' . $day . '</div>';
 						}
 						?>
 					</div>
 
-					<div class="mt-8 pt-6 border-t border-white/10 text-center">
-						<p class="text-sm text-blue-200 italic">Clicca su una data per filtrare gli eventi. <br>(Feature coming soon)</p>
+					<div class="mt-10 pt-6 border-t border-[var(--color-surface-container-low)] text-center">
+						<p class="text-sm text-[var(--color-on-surface-muted)] font-body italic">Clicca su una data per filtrare gli eventi. <br>(Feature coming soon)</p>
 					</div>
 				</div>
 
@@ -73,29 +73,30 @@ $first_day = date('w', strtotime(date('Y-m-01')));
 
 					<?php if ( $eventi_query->have_posts() ) : ?>
 						<?php while ( $eventi_query->have_posts() ) : $eventi_query->the_post(); ?>
-							<article class="glass-panel hover:bg-white/5 transition duration-300 flex flex-col md:flex-row gap-6 p-6">
+							<article class="tonal-panel bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col sm:flex-row gap-8 p-8">
 
 								<!-- Date Badge -->
-								<div class="flex-shrink-0 w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex flex-col items-center justify-center text-white shadow-inner border border-blue-500/50">
-									<span class="text-sm font-semibold uppercase tracking-widest opacity-80"><?php echo get_the_date('M'); ?></span>
-									<span class="text-3xl font-bold leading-none"><?php echo get_the_date('d'); ?></span>
+								<div class="flex-shrink-0 w-28 h-28 rounded-2xl bg-[var(--color-surface-container-low)] flex flex-col items-center justify-center text-[var(--color-primary)] border border-transparent shadow-inner">
+									<span class="text-sm font-bold uppercase tracking-widest opacity-80 font-body"><?php echo get_the_date('M'); ?></span>
+									<span class="text-4xl font-extrabold leading-none mt-1 font-display"><?php echo get_the_date('d'); ?></span>
 								</div>
 
 								<!-- Content -->
 								<div class="flex-grow flex flex-col justify-center">
-									<h2 class="text-2xl font-bold mb-2 text-white hover:text-blue-300 transition-colors">
+									<h2 class="text-3xl font-bold mb-3 text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors font-display leading-tight">
 										<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
 									</h2>
-									<div class="text-blue-200/80 mb-4 line-clamp-2 text-sm">
+									<div class="text-[var(--color-on-surface-muted)] mb-6 line-clamp-2 text-base font-body leading-relaxed">
 										<?php the_excerpt(); ?>
 									</div>
-									<div class="mt-auto flex items-center gap-4 text-xs font-medium text-blue-400">
-										<span class="flex items-center gap-1">
-											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+									<div class="mt-auto flex items-center gap-6 text-sm font-semibold text-[var(--color-accent)] font-body border-t border-[var(--color-surface-container-low)] pt-4">
+										<span class="flex items-center gap-2">
+											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
 											<?php echo get_the_time(); ?>
 										</span>
-										<a href="<?php the_permalink(); ?>" class="text-white bg-blue-600/50 hover:bg-blue-600 px-3 py-1 rounded-full transition ml-auto border border-blue-500">
-											Scopri i dettagli &rarr;
+										<a href="<?php the_permalink(); ?>" class="text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors ml-auto flex items-center gap-1 group">
+											Scopri i dettagli
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
 										</a>
 									</div>
 								</div>
@@ -105,13 +106,13 @@ $first_day = date('w', strtotime(date('Y-m-01')));
 					<?php else : ?>
 
 						<!-- Fallback No Events -->
-						<div class="glass-panel text-center py-24 flex flex-col items-center justify-center">
-							<svg class="w-20 h-20 text-blue-500/30 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-							<h3 class="text-2xl font-bold text-white mb-2">Nessun evento in programma</h3>
-							<p class="text-blue-200">Al momento non ci sono eventi pubblicati in calendario per Sant'Agata. Torna a visitare questa pagina più tardi o seguici sui nostri canali social per aggiornamenti in tempo reale.</p>
+						<div class="tonal-panel bg-white text-center py-24 flex flex-col items-center justify-center border-2 border-dashed border-[var(--color-surface-container-low)]">
+							<svg class="w-24 h-24 text-[var(--color-surface-container-low)] mb-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+							<h3 class="text-3xl font-bold text-[var(--color-primary)] mb-4 font-display">Nessun evento in programma</h3>
+							<p class="text-[var(--color-on-surface-muted)] font-body max-w-lg mx-auto leading-relaxed">Al momento non ci sono eventi pubblicati in calendario per Sant'Agata. Torna a visitare questa pagina più tardi o seguici sui nostri canali social per aggiornamenti in tempo reale.</p>
 
-							<div class="mt-8 flex gap-4">
-								<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="btn bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-full px-6 py-2 transition">Torna alla Home</a>
+							<div class="mt-10 flex gap-4">
+								<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="btn btn-secondary">Torna alla Home</a>
 							</div>
 						</div>
 

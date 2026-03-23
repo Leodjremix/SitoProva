@@ -3,8 +3,8 @@ Theme Name: Santagatesi nel Mondo
 Theme URI: https://santagatesinelmondo.it
 Author: Jules
 Author URI: https://santagatesinelmondo.it
-Description: A highly modular, optimized, custom WordPress theme for Santagatesi nel Mondo, featuring a modern glassmorphism design and parallax elements.
-Version: 1.0.0
+Description: A highly modular, optimized, custom WordPress theme for Santagatesi nel Mondo, featuring "The Luminous Horizon" design system.
+Version: 1.1.0
 Requires at least: 5.8
 Tested up to: 6.3
 License: GNU General Public License v2 or later
@@ -13,30 +13,36 @@ Text Domain: santagatesi
 */
 
 /* -------------------------------------------------------------------------- */
-/* CSS Variables
+/* CSS Variables - The Luminous Horizon
 /* -------------------------------------------------------------------------- */
 :root {
 	/* Colors */
-	--color-bg-dark: #0f172a;
-	--color-primary: #1e293b;
-	--color-accent: #3b82f6;
-	--color-text-light: #f8fafc;
-	--color-text-muted: #cbd5e1;
+	--color-primary: #003d6c; /* Deep Mediterranean Blue */
+	--color-surface: #f7fafe;
+	--color-surface-container-low: #f1f4f8;
+	--color-surface-container-lowest: #ffffff;
+	--color-on-surface: #181c1f;
+	--color-on-surface-muted: #495057;
+	--color-accent: #0066cc;
 
-	/* Glassmorphism */
-	--glass-bg: rgba(255, 255, 255, 0.05);
-	--glass-border: rgba(255, 255, 255, 0.1);
-	--glass-blur: blur(10px);
-	--glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	/* Shadows & Layering */
+	--shadow-ambient: 0px 20px 40px rgba(24, 28, 31, 0.06);
+	--shadow-hover: 0px 30px 60px rgba(24, 28, 31, 0.1);
 
 	/* Typography */
-	--font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--font-display: 'Noto Serif', serif;
+	--font-body: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
 	/* Spacing */
 	--spacing-sm: 1rem;
 	--spacing-md: 2rem;
 	--spacing-lg: 4rem;
 	--spacing-xl: 6rem;
+
+    /* Radii */
+    --radius-md: 12px;
+    --radius-lg: 24px;
+    --radius-xl: 40px;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -49,9 +55,9 @@ Text Domain: santagatesi
 }
 
 body {
-	font-family: var(--font-main);
-	background-color: var(--color-bg-dark);
-	color: var(--color-text-light);
+	font-family: var(--font-body);
+	background-color: var(--color-surface);
+	color: var(--color-on-surface);
 	line-height: 1.6;
 	overflow-x: hidden;
 }
@@ -63,20 +69,26 @@ img {
 }
 
 a {
-	color: var(--color-accent);
+	color: var(--color-primary);
 	text-decoration: none;
 	transition: color 0.3s ease;
 }
 
 a:hover {
-	color: var(--color-text-light);
+	color: var(--color-accent);
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
+	font-family: var(--font-display);
 	font-weight: 700;
 	line-height: 1.2;
 	margin-bottom: var(--spacing-sm);
+    color: var(--color-primary);
+}
+
+p {
+    color: var(--color-on-surface);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -118,103 +130,114 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Components
+/* Components (The Luminous Horizon)
 /* -------------------------------------------------------------------------- */
 
-/* Glass Panel */
-.glass-panel {
-	background: var(--glass-bg);
-	backdrop-filter: var(--glass-blur);
-	-webkit-backdrop-filter: var(--glass-blur);
-	border: 1px solid var(--glass-border);
-	border-radius: 16px;
+/* Tonal Panel (Replaces Glass Panel) - No Line Rule */
+.tonal-panel {
+	background-color: var(--color-surface-container-lowest);
+	border-radius: var(--radius-lg);
 	padding: var(--spacing-md);
-	box-shadow: var(--glass-shadow);
+	box-shadow: var(--shadow-ambient);
+    border: none; /* No-line rule */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.tonal-panel:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-4px);
+}
+
+/* Tonal Panel Low */
+.tonal-panel-low {
+	background-color: var(--color-surface-container-low);
+	border-radius: var(--radius-lg);
+	padding: var(--spacing-md);
+    border: none;
 }
 
 /* Buttons */
 .btn {
 	display: inline-block;
-	padding: 0.75rem 1.5rem;
-	border-radius: 8px;
+	padding: 0.75rem 2rem;
+	border-radius: 100px; /* Pill shape */
 	font-weight: 600;
 	text-align: center;
 	cursor: pointer;
 	transition: all 0.3s ease;
+    font-family: var(--font-body);
 }
 
 .btn-primary {
-	background-color: var(--color-accent);
+	background-color: var(--color-primary);
 	color: #fff;
 	border: none;
 }
 
 .btn-primary:hover {
-	background-color: #2563eb;
+	background-color: var(--color-accent);
 	color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 61, 108, 0.2);
 }
 
-.btn-glass {
-	background: var(--glass-bg);
-	backdrop-filter: var(--glass-blur);
-	border: 1px solid var(--glass-border);
-	color: var(--color-text-light);
+.btn-secondary {
+	background-color: var(--color-surface-container-lowest);
+	color: var(--color-primary);
+    box-shadow: var(--shadow-ambient);
+    border: none;
 }
 
-.btn-glass:hover {
-	background: rgba(255, 255, 255, 0.1);
+.btn-secondary:hover {
+	background-color: var(--color-surface-container-low);
+    transform: translateY(-2px);
 }
 
 /* -------------------------------------------------------------------------- */
-/* Header & Navigation (Desktop & Mobile WordPress Classes)
+/* Header & Navigation (Skyline Navigation)
 /* -------------------------------------------------------------------------- */
 body {
-    padding-top: 80px; /* Accommodate sticky header */
+    padding-top: 90px;
 }
 
-/* WP Nav Classes overriding Tailwind for custom animations */
+/* WP Nav Classes */
 .main-navigation .menu-item a {
     position: relative;
     font-weight: 600;
-    color: var(--color-text-light);
+    color: var(--color-on-surface-muted);
     transition: color 0.3s ease;
-    padding-bottom: 4px; /* Space for the underline */
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
 }
 
-/* Desktop Hover Underline Animation */
+/* Desktop Hover Pill Animation */
 @media (min-width: 768px) {
-    .main-navigation .menu-item a::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: 0;
-        left: 0;
-        background-color: var(--color-accent);
-        transition: width 0.3s ease;
-        border-radius: 2px;
-    }
-
-    .main-navigation .menu-item a:hover::after,
-    .main-navigation .current-menu-item > a::after {
-        width: 100%;
+    .main-navigation .menu-item a:hover,
+    .main-navigation .current-menu-item > a {
+        background-color: var(--color-surface-container-low);
+        color: var(--color-primary);
     }
 }
 
 .main-navigation .menu-item a:hover,
 .main-navigation .current-menu-item > a {
-    color: var(--color-accent);
+    color: var(--color-primary);
 }
 
-/* Mobile Nav Specific Tweaks */
+/* Mobile Nav */
+.mobile-nav-wrapper {
+    background-color: var(--color-surface);
+}
+
 .mobile-nav-wrapper .menu-item {
     margin-bottom: 1.5rem;
 }
 
 .mobile-nav-wrapper .menu-item a {
     display: inline-block;
-    color: var(--color-text-light);
+    color: var(--color-primary);
     font-size: 1.5rem;
+    font-family: var(--font-display);
     font-weight: 700;
     transition: transform 0.2s ease, color 0.2s ease;
 }
@@ -227,6 +250,7 @@ body {
 /* Hamburger Icon State Utilities (used by JS) */
 .hamburger-icon .line {
     transform-origin: center;
+    background-color: var(--color-primary); /* Update line color */
 }
 .hamburger-icon .line-1.rotate-45 {
     transform: rotate(45deg) translate(5px, 6px);
@@ -236,11 +260,11 @@ body {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Hero Section (Parallax)
+/* Hero Section (Bright Mediterranean)
 /* -------------------------------------------------------------------------- */
 .hero-section {
 	position: relative;
-	min-height: 100vh;
+	min-height: 90vh;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -248,10 +272,10 @@ body {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
-	padding-top: 80px; /* Offset for header */
+	padding-top: 90px;
 }
 
-/* Overlay for parallax background to improve readability */
+/* Overlay for hero background */
 .hero-section::before {
 	content: '';
 	position: absolute;
@@ -259,7 +283,7 @@ body {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: rgba(15, 23, 42, 0.6); /* Dark blue overlay */
+	background: linear-gradient(to bottom, rgba(247, 250, 254, 0.4), rgba(247, 250, 254, 0.9)); /* Light gradient overlay */
 	z-index: 1;
 }
 
@@ -268,22 +292,25 @@ body {
 	z-index: 2;
 	text-align: center;
 	max-width: 800px;
+    padding: var(--spacing-md);
 }
 
 .hero-title {
-	font-size: 3rem;
+	font-size: 3.5rem;
 	margin-bottom: var(--spacing-md);
+    color: var(--color-primary);
 }
 
 .hero-subtitle {
 	font-size: 1.25rem;
-	color: var(--color-text-muted);
+	color: var(--color-on-surface-muted);
 	margin-bottom: var(--spacing-lg);
+    font-family: var(--font-body);
 }
 
 @media (min-width: 768px) {
 	.hero-title {
-		font-size: 4rem;
+		font-size: 5rem;
 	}
 }
 
@@ -297,7 +324,8 @@ body {
 	padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
 	height: 0;
 	overflow: hidden;
-	border-radius: 8px;
+	border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-ambient);
 }
 
 .webcam-container iframe {
@@ -314,30 +342,32 @@ body {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
+    overflow: hidden; /* For border radius */
 }
 
 .news-thumbnail {
 	width: 100%;
-	height: 200px;
+	height: 240px;
 	object-fit: cover;
-	border-radius: 8px 8px 0 0;
-	margin-bottom: var(--spacing-sm);
+	border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .news-content {
 	flex-grow: 1;
 	display: flex;
 	flex-direction: column;
+    padding: var(--spacing-sm) 0 0 0;
 }
 
 .news-title {
-	font-size: 1.25rem;
+	font-size: 1.5rem;
 	margin-bottom: 0.5rem;
+    color: var(--color-primary);
 }
 
 .news-excerpt {
-	color: var(--color-text-muted);
-	margin-bottom: 1rem;
+	color: var(--color-on-surface-muted);
+	margin-bottom: 1.5rem;
 	flex-grow: 1;
 }
 
@@ -351,7 +381,7 @@ body {
 	padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
 	height: 0;
 	overflow: hidden;
-	border-radius: 8px 8px 0 0;
+	border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .video-thumbnail-container img {
@@ -368,21 +398,22 @@ body {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 48px;
-	height: 48px;
-	background: rgba(0, 0, 0, 0.7);
+	width: 64px;
+	height: 64px;
+	background: var(--color-surface-container-lowest);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: white;
+	color: var(--color-primary);
 	font-size: 24px;
-	opacity: 0.8;
-	transition: opacity 0.3s ease;
+    box-shadow: var(--shadow-ambient);
+	transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .video-thumbnail-container:hover .video-play-icon {
-	opacity: 1;
+	transform: translate(-50%, -50%) scale(1.1);
+    color: var(--color-accent);
 }
 
 /* Facebook CTA */
@@ -391,15 +422,20 @@ body {
 }
 
 .facebook-icon {
-	font-size: 3rem;
+	font-size: 4rem;
 	color: #1877F2; /* Facebook Blue */
 	margin-bottom: var(--spacing-sm);
 }
 
 /* Footer */
 .site-footer {
-	padding: var(--spacing-md) 0;
-	border-top: 1px solid var(--glass-border);
+	padding: var(--spacing-lg) 0 var(--spacing-md) 0;
+	background-color: var(--color-surface-container-low);
 	text-align: center;
-	color: var(--color-text-muted);
+	color: var(--color-on-surface-muted);
+    border-top: none;
+}
+
+.site-footer a {
+    color: var(--color-primary);
 }

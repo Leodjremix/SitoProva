@@ -14,11 +14,11 @@ $news_args = array(
 $news_query = new WP_Query( $news_args );
 ?>
 
-<section id="news" class="section bg-opacity-50">
+<section id="news" class="section bg-[var(--color-surface-container-lowest)]">
 	<div class="container">
-		<header class="section-header text-center mb-8">
-			<h2 class="text-3xl font-bold mb-4">Ultime Notizie</h2>
-			<p class="text-color-muted">Rimani aggiornato su cosa succede a Sant'Agata e nel mondo.</p>
+		<header class="section-header text-center mb-12">
+			<h2 class="text-4xl font-bold mb-4">Ultime Notizie</h2>
+			<p class="text-lg text-color-on-surface-muted font-body">Rimani aggiornato su cosa succede a Sant'Agata e nel mondo.</p>
 		</header>
 
 		<?php if ( $news_query->have_posts() ) : ?>
@@ -27,32 +27,32 @@ $news_query = new WP_Query( $news_args );
 				while ( $news_query->have_posts() ) :
 					$news_query->the_post();
 					?>
-					<article id="post-<?php the_ID(); ?>" <?php post_class( 'glass-panel news-card' ); ?>>
+					<article id="post-<?php the_ID(); ?>" <?php post_class( 'tonal-panel-low news-card' ); ?>>
 						<?php if ( has_post_thumbnail() ) : ?>
 							<a href="<?php the_permalink(); ?>">
-								<?php the_post_thumbnail( 'medium_large', array( 'class' => 'news-thumbnail' ) ); ?>
+								<?php the_post_thumbnail( 'medium_large', array( 'class' => 'news-thumbnail w-full h-48 object-cover rounded-t-xl mb-4' ) ); ?>
 							</a>
 						<?php else: ?>
                             <!-- Fallback thumbnail if none is set -->
                             <a href="<?php the_permalink(); ?>">
-                                <div class="news-thumbnail flex items-center justify-center bg-gray-800" style="background-color: #1e293b;">
-                                    <span class="text-gray-500">Nessuna Immagine</span>
+                                <div class="news-thumbnail flex items-center justify-center bg-[var(--color-surface)] w-full h-48 rounded-t-xl mb-4">
+                                    <span class="text-[var(--color-on-surface-muted)]">Nessuna Immagine</span>
                                 </div>
                             </a>
                         <?php endif; ?>
 
-						<div class="news-content mt-4">
-                            <div class="post-meta text-sm text-color-muted mb-2">
+						<div class="news-content mt-4 px-2">
+                            <div class="post-meta text-sm text-[var(--color-on-surface-muted)] mb-2 font-body font-semibold">
                                 <?php echo get_the_date(); ?> &bull; di <?php the_author(); ?>
                             </div>
-							<h3 class="news-title">
+							<h3 class="news-title text-2xl font-bold text-[var(--color-primary)] mb-3 leading-snug">
 								<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
 							</h3>
-							<div class="news-excerpt">
+							<div class="news-excerpt text-[var(--color-on-surface-muted)] mb-4 font-body leading-relaxed">
 								<?php the_excerpt(); ?>
 							</div>
-							<div class="mt-auto pt-4">
-								<a href="<?php the_permalink(); ?>" class="text-accent hover:text-white font-semibold">Leggi di più &rarr;</a>
+							<div class="mt-auto pt-4 border-t border-[var(--color-surface)]">
+								<a href="<?php the_permalink(); ?>" class="text-[var(--color-accent)] hover:text-[var(--color-primary)] font-semibold font-body transition-colors">Leggi di più &rarr;</a>
 							</div>
 						</div>
 					</article>
@@ -63,7 +63,7 @@ $news_query = new WP_Query( $news_args );
 				<a href="<?php echo esc_url( get_permalink( get_option( 'page_for_posts' ) ) ); ?>" class="btn btn-primary">Vedi tutte le notizie</a>
 			</div>
 		<?php else : ?>
-			<p class="text-center">Nessuna notizia trovata.</p>
+			<p class="text-center text-[var(--color-on-surface-muted)]">Nessuna notizia trovata.</p>
 		<?php endif; ?>
 
 		<?php wp_reset_postdata(); ?>
