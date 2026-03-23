@@ -166,43 +166,73 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Header & Navigation
+/* Header & Navigation (Desktop & Mobile WordPress Classes)
 /* -------------------------------------------------------------------------- */
-.site-header {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	z-index: 1000;
-	transition: all 0.3s ease;
+body {
+    padding-top: 80px; /* Accommodate sticky header */
 }
 
-.site-header.glass-panel {
-	border-radius: 0;
-	border-left: none;
-	border-right: none;
-	border-top: none;
-	padding: var(--spacing-sm) 0;
+/* WP Nav Classes overriding Tailwind for custom animations */
+.main-navigation .menu-item a {
+    position: relative;
+    font-weight: 600;
+    color: var(--color-text-light);
+    transition: color 0.3s ease;
+    padding-bottom: 4px; /* Space for the underline */
 }
 
-.site-branding .site-title a {
-	font-size: 1.5rem;
-	font-weight: bold;
-	color: var(--color-text-light);
+/* Desktop Hover Underline Animation */
+@media (min-width: 768px) {
+    .main-navigation .menu-item a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: var(--color-accent);
+        transition: width 0.3s ease;
+        border-radius: 2px;
+    }
+
+    .main-navigation .menu-item a:hover::after,
+    .main-navigation .current-menu-item > a::after {
+        width: 100%;
+    }
 }
 
-.main-navigation ul {
-	list-style: none;
-	display: flex;
-	gap: 1.5rem;
+.main-navigation .menu-item a:hover,
+.main-navigation .current-menu-item > a {
+    color: var(--color-accent);
 }
 
-.main-navigation a {
-	color: var(--color-text-light);
-	font-weight: 500;
+/* Mobile Nav Specific Tweaks */
+.mobile-nav-wrapper .menu-item {
+    margin-bottom: 1.5rem;
 }
 
-.main-navigation a:hover {
-	color: var(--color-accent);
+.mobile-nav-wrapper .menu-item a {
+    display: inline-block;
+    color: var(--color-text-light);
+    font-size: 1.5rem;
+    font-weight: 700;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.mobile-nav-wrapper .menu-item a:hover {
+    color: var(--color-accent);
+    transform: translateX(10px);
+}
+
+/* Hamburger Icon State Utilities (used by JS) */
+.hamburger-icon .line {
+    transform-origin: center;
+}
+.hamburger-icon .line-1.rotate-45 {
+    transform: rotate(45deg) translate(5px, 6px);
+}
+.hamburger-icon .line-3.-rotate-45 {
+    transform: rotate(-45deg) translate(5px, -6px);
 }
 
 /* -------------------------------------------------------------------------- */
