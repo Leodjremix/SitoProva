@@ -36,14 +36,14 @@
 						the_custom_logo();
 					else :
 						?>
-						<h1 class="site-title text-2xl md:text-3xl font-extrabold tracking-tight text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors font-display py-2">
+						<div class="site-title text-2xl md:text-3xl font-extrabold tracking-tight text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors font-display py-2">
 							<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
-						</h1>
+						</div>
 					<?php endif; ?>
 				</div>
 
 				<!-- Desktop Navigation (Mega Menu Support) -->
-				<nav id="site-navigation" class="main-navigation hidden lg:flex items-center space-x-1">
+				<nav id="site-navigation" class="main-navigation hidden lg:flex items-center space-x-1" aria-label="Menu Principale Desktop">
 					<?php
 					wp_nav_menu(
 						array(
@@ -58,7 +58,7 @@
 				</nav>
 
 				<!-- Hamburger Menu Button (Mobile/Tablet) -->
-				<button id="mobile-menu-toggle" class="lg:hidden relative z-50 w-12 h-12 flex items-center justify-center rounded-full bg-[var(--color-surface-container-low)] hover:bg-[var(--color-surface)] transition-colors focus:outline-none focus:ring-4 focus:ring-[var(--color-accent)]/50" aria-label="Toggle Menu" aria-expanded="false" aria-controls="mobile-navigation">
+				<button id="mobile-menu-toggle" class="lg:hidden relative z-50 w-12 h-12 flex items-center justify-center rounded-full bg-[var(--color-surface-container-low)] hover:bg-[var(--color-surface)] transition-colors focus:outline-none focus:ring-4 focus:ring-[var(--color-accent)]/50" aria-label="Apri Menu Navigazione" aria-expanded="false" aria-controls="mobile-navigation">
 					<div class="hamburger-icon w-6 h-5 relative flex flex-col justify-between items-center">
 						<span class="line line-1 w-full h-[3px] rounded-full transition-all duration-300 origin-left"></span>
 						<span class="line line-2 w-full h-[3px] rounded-full transition-all duration-300"></span>
@@ -70,7 +70,7 @@
 		</div>
 
 		<!-- Mobile Navigation Panel (Off-Canvas/Fullscreen) -->
-		<div id="mobile-navigation" class="fixed inset-0 bg-[var(--color-surface)]/98 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-500 ease-in-out lg:hidden overflow-y-auto">
+		<div id="mobile-navigation" class="fixed inset-0 bg-[var(--color-surface)]/98 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-500 ease-in-out lg:hidden overflow-y-auto" role="dialog" aria-modal="true" aria-label="Menu Navigazione Mobile">
 			<div class="container px-4 py-28 min-h-screen flex flex-col">
 				<nav class="mobile-nav-wrapper w-full">
 					<?php
@@ -89,11 +89,11 @@
 				<!-- Mobile Socials/CTA -->
 				<div class="mt-auto text-center border-t border-[var(--color-surface-container-low)] pt-8 pb-12 opacity-0 translate-y-4 transition-all duration-500 delay-300" id="mobile-nav-extras">
                     <p class="text-[var(--color-on-surface-muted)] text-sm mb-4 font-body">Seguici sui nostri canali</p>
-					<a href="https://www.facebook.com/groups/artemisiumwebtv/" target="_blank" rel="noopener noreferrer" class="text-[#1877F2] hover:text-[var(--color-primary)] transition-colors inline-block mx-4 transform hover:scale-110">
-						<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
+					<a href="https://www.facebook.com/groups/artemisiumwebtv/" target="_blank" rel="noopener noreferrer" class="text-[#1877F2] hover:text-[var(--color-primary)] transition-colors inline-block mx-4 transform hover:scale-110" aria-label="Visita il nostro Gruppo Facebook">
+						<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
 					</a>
-                    <a href="https://www.youtube.com/user/nardino1000" target="_blank" rel="noopener noreferrer" class="text-[#FF0000] hover:text-[var(--color-primary)] transition-colors inline-block mx-4 transform hover:scale-110">
-						<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                    <a href="https://www.youtube.com/user/nardino1000" target="_blank" rel="noopener noreferrer" class="text-[#FF0000] hover:text-[var(--color-primary)] transition-colors inline-block mx-4 transform hover:scale-110" aria-label="Visita il nostro Canale YouTube">
+						<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
 					</a>
 				</div>
 			</div>
