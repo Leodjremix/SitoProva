@@ -24,6 +24,9 @@ get_header();
 		// 3. News Section (Latest 3 posts)
 		get_template_part( 'template-parts/news-section' );
 
+        // 3.5. Donation Section
+        get_template_part( 'template-parts/donation-section' );
+
 		// 4. YouTube Video Gallery Section
 		get_template_part( 'template-parts/youtube-section' );
 
