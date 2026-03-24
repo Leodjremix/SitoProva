@@ -241,7 +241,7 @@ function santagatesi_guestbook_comment_format( $comment, $args, $depth ) {
 /**
  * Include Frontend Posting Module
  */
-require get_template_directory() . '/inc/frontend-posting.php';
+require get_stylesheet_directory() . '/inc/frontend-posting.php';
 
 /**
  * Enqueue scripts and styles.
