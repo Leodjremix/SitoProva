@@ -180,6 +180,9 @@ function santagatesi_theme_activation_setup() {
 
         // Assign menu to the theme location
         $locations = get_theme_mod('nav_menu_locations');
+        if ( ! is_array( $locations ) ) {
+            $locations = array();
+        }
         $locations[$menu_location] = $menu_id;
         set_theme_mod('nav_menu_locations', $locations);
     }
@@ -234,6 +237,11 @@ function santagatesi_guestbook_comment_format( $comment, $args, $depth ) {
     </li>
     <?php
 }
+
+/**
+ * Include Frontend Posting Module
+ */
+require get_template_directory() . '/inc/frontend-posting.php';
 
 /**
  * Enqueue scripts and styles.
