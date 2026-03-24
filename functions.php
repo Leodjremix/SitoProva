@@ -61,35 +61,39 @@ function santagatesi_setup() {
 add_action( 'after_setup_theme', 'santagatesi_setup' );
 
 /**
- * Custom Theme Activation Script
- * Creates required pages, categories, and assigns them to the Primary Menu upon theme activation.
- * Aggiornato per creare un Mega Menu strutturato.
+ * Custom Theme Initialization Script
+ * Runs once to build out the site architecture (Pages, Categories, Menus).
  */
-function santagatesi_theme_activation_setup() {
-    // 1. Create Required Pages
-    $pages_to_create = array(
-        'Chi Siamo' => 'chi-siamo',
-        'Redazione' => 'redazione',
-        'Santagatesi Illustri' => 'santagatesi-illustri',
-        'Archivio Storico' => 'archivio-storico',
-        'Foto-Video Gallery' => 'foto-video-gallery',
-        'Produzioni' => 'produzioni',
-        'Utilità e Links' => 'utilita-e-links',
-        'Contatti' => 'contatti',
-        'Privacy Policy' => 'privacy-policy',
-        'Cookie Policy' => 'cookie-policy',
-    );
+function santagatesi_site_architecture_setup() {
+    // Run this only once by checking an option flag
+    if ( get_option( 'santagatesi_architecture_setup_complete' ) ) {
+        return;
+    }
 
     $created_pages = array();
 
-    foreach ( $pages_to_create as $page_title => $page_slug ) {
+    // 1. Create Parent Pages
+    $parent_pages = array(
+        'Chi Siamo'            => 'chi-siamo',
+        'Santagatesi Illustri' => 'santagatesi-illustri',
+        'Archivio Storico'     => 'archivio-storico',
+        'Foto-Video Gallery'   => 'foto-video-gallery',
+        'Produzioni'           => 'produzioni',
+        'Utilità e Links'      => 'utilita-e-links',
+        'Piazza Affari'        => 'piazza-affari',
+        'Contatti'             => 'contatti',
+        'Privacy Policy'       => 'privacy-policy',
+        'Cookie Policy'        => 'cookie-policy',
+    );
+
+    foreach ( $parent_pages as $page_title => $page_slug ) {
         $page_check = get_page_by_path( $page_slug );
         if ( ! isset( $page_check->ID ) ) {
             $new_page = array(
                 'post_type'    => 'page',
                 'post_title'   => $page_title,
                 'post_name'    => $page_slug,
-                'post_content' => 'Contenuto in aggiornamento...',
+                'post_content' => '<!-- wp:heading {"textAlign":"center"} --><h2 class="wp-block-heading has-text-align-center">Contenuto in aggiornamento</h2><!-- /wp:heading -->',
                 'post_status'  => 'publish',
                 'post_author'  => 1,
             );
@@ -100,7 +104,52 @@ function santagatesi_theme_activation_setup() {
         }
     }
 
-    // 2. Rename Default Category to "Artemisium News"
+    // 2. Create Child Pages
+    $child_pages = array(
+        'Redazione' => array(
+            'slug'   => 'redazione',
+            'parent' => $created_pages['Chi Siamo']
+        ),
+    );
+
+    foreach ( $child_pages as $page_title => $data ) {
+        $page_check = get_page_by_path( $data['slug'] );
+        if ( ! isset( $page_check->ID ) ) {
+            $new_page = array(
+                'post_type'    => 'page',
+                'post_title'   => $page_title,
+                'post_name'    => $data['slug'],
+                'post_content' => '<!-- wp:heading {"textAlign":"center"} --><h2 class="wp-block-heading has-text-align-center">La Redazione</h2><!-- /wp:heading -->',
+                'post_status'  => 'publish',
+                'post_author'  => 1,
+                'post_parent'  => $data['parent']
+            );
+            $page_id = wp_insert_post( $new_page );
+            $created_pages[$page_title] = $page_id;
+        } else {
+            $created_pages[$page_title] = $page_check->ID;
+        }
+    }
+
+    // 3. Create Private Editorial Page
+    $editor_page_slug = 'area-redazione';
+    $editor_page_check = get_page_by_path( $editor_page_slug );
+    if ( ! isset( $editor_page_check->ID ) ) {
+        $new_editor_page = array(
+            'post_type'    => 'page',
+            'post_title'   => 'Area Redazione',
+            'post_name'    => $editor_page_slug,
+            'post_content' => '<!-- wp:shortcode -->[form_inserimento_news]<!-- /wp:shortcode -->',
+            'post_status'  => 'publish', // Publish, but logic inside shortcode restricts access
+            'post_author'  => 1,
+        );
+        $editor_page_id = wp_insert_post( $new_editor_page );
+        $created_pages['Area Redazione'] = $editor_page_id;
+    } else {
+        $created_pages['Area Redazione'] = $editor_page_check->ID;
+    }
+
+    // 4. Rename Default Category to "Artemisium News"
     $default_cat_id = get_option( 'default_category' );
     if ( $default_cat_id ) {
         wp_update_term( $default_cat_id, 'category', array(
@@ -109,7 +158,7 @@ function santagatesi_theme_activation_setup() {
         ) );
     }
 
-    // 3. Create Additional Historical Categories
+    // 5. Create Additional Historical Categories
     $categories_to_create = array( 'Cultura', 'Sport', 'Primo Piano', 'Videonotiziario' );
     foreach ( $categories_to_create as $cat_name ) {
         if ( ! term_exists( $cat_name, 'category' ) ) {
@@ -117,77 +166,16 @@ function santagatesi_theme_activation_setup() {
         }
     }
 
-    // 4. Delete Dummy Posts (like "Hello World")
+    // 6. Delete Dummy Posts (like "Hello World")
     $dummy_post = get_page_by_path( 'hello-world', OBJECT, 'post' );
     if ( $dummy_post ) {
         wp_delete_post( $dummy_post->ID, true );
     }
 
-    // 5. Build the Primary Menu (Strutturato a tendina)
-    $menu_name = 'Menu Principale Strutturato';
-    $menu_location = 'primary';
-
-    // Check if menu already exists
-    $menu_exists = wp_get_nav_menu_object( $menu_name );
-
-    if ( ! $menu_exists ) {
-        $menu_id = wp_create_nav_menu( $menu_name );
-
-        // Helper to add menu items (Page)
-        $add_page_item = function($title, $object_id, $parent_id = 0) use ($menu_id) {
-            return wp_update_nav_menu_item($menu_id, 0, array(
-                'menu-item-title' => $title,
-                'menu-item-object-id' => $object_id,
-                'menu-item-object' => 'page',
-                'menu-item-type' => 'post_type',
-                'menu-item-status' => 'publish',
-                'menu-item-parent-id' => $parent_id,
-            ));
-        };
-
-        // Helper to add custom links (Dropdown Parents)
-        $add_custom_item = function($title, $url, $parent_id = 0) use ($menu_id) {
-            return wp_update_nav_menu_item($menu_id, 0, array(
-                'menu-item-title' => $title,
-                'menu-item-url' => $url,
-                'menu-item-status' => 'publish',
-                'menu-item-parent-id' => $parent_id,
-            ));
-        };
-
-        // Livello 1: L'Associazione
-        $assoc_id = $add_custom_item("L'Associazione", '#');
-        $add_page_item('Chi Siamo', $created_pages['Chi Siamo'], $assoc_id);
-        $add_page_item('Redazione', $created_pages['Redazione'], $assoc_id);
-
-        // Livello 1: Il Territorio
-        $terr_id = $add_custom_item("Il Territorio", '#');
-        $add_page_item('Santagatesi Illustri', $created_pages['Santagatesi Illustri'], $terr_id);
-        $add_page_item('Archivio Storico', $created_pages['Archivio Storico'], $terr_id);
-
-        // Livello 1: Notizie (Link diretto al blog o home)
-        $add_custom_item('Notizie', home_url('/#news'));
-
-        // Livello 1: Multimedia
-        $multi_id = $add_custom_item("Multimedia", '#');
-        $add_page_item('Foto-Video Gallery', $created_pages['Foto-Video Gallery'], $multi_id);
-        $add_page_item('Produzioni', $created_pages['Produzioni'], $multi_id);
-
-        // Livello 1: Info
-        $info_id = $add_custom_item("Info", '#');
-        $add_page_item('Utilità e Links', $created_pages['Utilità e Links'], $info_id);
-        $add_page_item('Contatti', $created_pages['Contatti'], $info_id);
-
-        // Assign menu to the theme location
-        $locations = get_theme_mod('nav_menu_locations');
-        if ( ! is_array( $locations ) ) {
-            $locations = array();
-        }
-        $locations[$menu_location] = $menu_id;
-        set_theme_mod('nav_menu_locations', $locations);
-    }
+    // Mark setup as complete
+    update_option( 'santagatesi_architecture_setup_complete', true );
 }
-add_action( 'after_switch_theme', 'santagatesi_theme_activation_setup' );
+add_action( 'init', 'santagatesi_site_architecture_setup' );
 
 /**
  * Custom Comment Walker per Guestbook (Stile "The Luminous Horizon")
@@ -257,6 +245,73 @@ function santagatesi_scripts() {
     wp_enqueue_script( 'tailwindcss', 'https://cdn.tailwindcss.com', array(), null, false );
 }
 add_action( 'wp_enqueue_scripts', 'santagatesi_scripts' );
+
+/**
+ * Custom Login Page Logo
+ */
+function santagatesi_custom_login_logo() {
+    // Attempt to get custom logo from theme mods, otherwise use a generic style
+    $custom_logo_id = get_theme_mod( 'custom_logo' );
+    $logo = wp_get_attachment_image_src( $custom_logo_id , 'full' );
+
+    if ( has_custom_logo() && ! empty( $logo ) ) {
+        $logo_url = $logo[0];
+    } else {
+        // Fallback or generic text approach if no logo is set in Customizer
+        // For simplicity we will style the header text natively
+        $logo_url = '';
+    }
+
+    ?>
+    <style type="text/css">
+        #login h1 a, .login h1 a {
+            <?php if ( ! empty( $logo_url ) ) : ?>
+                background-image: url(<?php echo esc_url( $logo_url ); ?>);
+                background-size: contain;
+                background-position: center center;
+                background-repeat: no-repeat;
+                height: 100px;
+                width: 100%;
+            <?php else : ?>
+                background-image: none;
+                content: "Santagatesi nel Mondo";
+                display: block;
+                font-size: 24px;
+                color: #003d6c; /* --color-primary */
+                text-indent: 0;
+                width: auto;
+                height: auto;
+                padding-bottom: 20px;
+            <?php endif; ?>
+        }
+        body.login {
+            background-color: #f7fafe; /* --color-surface */
+        }
+        .login form {
+            border-radius: 16px;
+            box-shadow: 0px 20px 40px rgba(24, 28, 31, 0.06);
+            border: none;
+        }
+        .wp-core-ui .button-primary {
+            background-color: #003d6c !important;
+            border-color: #003d6c !important;
+            color: #fff !important;
+            border-radius: 100px;
+        }
+    </style>
+    <?php
+}
+add_action( 'login_enqueue_scripts', 'santagatesi_custom_login_logo' );
+
+function santagatesi_login_logo_url() {
+    return home_url();
+}
+add_filter( 'login_headerurl', 'santagatesi_login_logo_url' );
+
+function santagatesi_login_logo_url_title() {
+    return 'Santagatesi nel Mondo';
+}
+add_filter( 'login_headertext', 'santagatesi_login_logo_url_title' );
 
 /**
  * Fetch latest YouTube videos via RSS Feed
