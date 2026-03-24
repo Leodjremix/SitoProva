@@ -63,6 +63,7 @@ add_action( 'after_setup_theme', 'santagatesi_setup' );
 /**
  * Custom Theme Activation Script
  * Creates required pages, categories, and assigns them to the Primary Menu upon theme activation.
+ * Aggiornato per creare un Mega Menu strutturato.
  */
 function santagatesi_theme_activation_setup() {
     // 1. Create Required Pages
@@ -122,8 +123,8 @@ function santagatesi_theme_activation_setup() {
         wp_delete_post( $dummy_post->ID, true );
     }
 
-    // 5. Build the Primary Menu
-    $menu_name = 'Menu Principale Storico';
+    // 5. Build the Primary Menu (Strutturato a tendina)
+    $menu_name = 'Menu Principale Strutturato';
     $menu_location = 'primary';
 
     // Check if menu already exists
@@ -132,8 +133,8 @@ function santagatesi_theme_activation_setup() {
     if ( ! $menu_exists ) {
         $menu_id = wp_create_nav_menu( $menu_name );
 
-        // Helper to add menu items
-        $add_menu_item = function($title, $object_id, $parent_id = 0) use ($menu_id) {
+        // Helper to add menu items (Page)
+        $add_page_item = function($title, $object_id, $parent_id = 0) use ($menu_id) {
             return wp_update_nav_menu_item($menu_id, 0, array(
                 'menu-item-title' => $title,
                 'menu-item-object-id' => $object_id,
@@ -144,19 +145,38 @@ function santagatesi_theme_activation_setup() {
             ));
         };
 
-        // Add top level items
-        $chi_siamo_menu_id = $add_menu_item('Chi Siamo', $created_pages['Chi Siamo']);
+        // Helper to add custom links (Dropdown Parents)
+        $add_custom_item = function($title, $url, $parent_id = 0) use ($menu_id) {
+            return wp_update_nav_menu_item($menu_id, 0, array(
+                'menu-item-title' => $title,
+                'menu-item-url' => $url,
+                'menu-item-status' => 'publish',
+                'menu-item-parent-id' => $parent_id,
+            ));
+        };
 
-        // Add nested item (Redazione under Chi Siamo)
-        $add_menu_item('Redazione', $created_pages['Redazione'], $chi_siamo_menu_id);
+        // Livello 1: L'Associazione
+        $assoc_id = $add_custom_item("L'Associazione", '#');
+        $add_page_item('Chi Siamo', $created_pages['Chi Siamo'], $assoc_id);
+        $add_page_item('Redazione', $created_pages['Redazione'], $assoc_id);
 
-        // Add rest of the top level items
-        $add_menu_item('Santagatesi Illustri', $created_pages['Santagatesi Illustri']);
-        $add_menu_item('Archivio Storico', $created_pages['Archivio Storico']);
-        $add_menu_item('Foto-Video Gallery', $created_pages['Foto-Video Gallery']);
-        $add_menu_item('Produzioni', $created_pages['Produzioni']);
-        $add_menu_item('Utilità e Links', $created_pages['Utilità e Links']);
-        $add_menu_item('Contatti', $created_pages['Contatti']);
+        // Livello 1: Il Territorio
+        $terr_id = $add_custom_item("Il Territorio", '#');
+        $add_page_item('Santagatesi Illustri', $created_pages['Santagatesi Illustri'], $terr_id);
+        $add_page_item('Archivio Storico', $created_pages['Archivio Storico'], $terr_id);
+
+        // Livello 1: Notizie (Link diretto al blog o home)
+        $add_custom_item('Notizie', home_url('/#news'));
+
+        // Livello 1: Multimedia
+        $multi_id = $add_custom_item("Multimedia", '#');
+        $add_page_item('Foto-Video Gallery', $created_pages['Foto-Video Gallery'], $multi_id);
+        $add_page_item('Produzioni', $created_pages['Produzioni'], $multi_id);
+
+        // Livello 1: Info
+        $info_id = $add_custom_item("Info", '#');
+        $add_page_item('Utilità e Links', $created_pages['Utilità e Links'], $info_id);
+        $add_page_item('Contatti', $created_pages['Contatti'], $info_id);
 
         // Assign menu to the theme location
         $locations = get_theme_mod('nav_menu_locations');
@@ -233,19 +253,14 @@ add_action( 'wp_enqueue_scripts', 'santagatesi_scripts' );
 /**
  * Fetch latest YouTube videos via RSS Feed
  *
- * Using YouTube RSS feed instead of API key to keep it simple and avoid API key management.
- * The channel ID for Santagatesi is 'nardino1000' based on the context URL.
- * YouTube user feeds are available at: https://www.youtube.com/feeds/videos.xml?user=nardino1000
- * Or Channel ID feed: https://www.youtube.com/feeds/videos.xml?channel_id=UC...
- *
- * Note: If 'nardino1000' is a username, we use user=. If it fails, fallback mock data is provided.
+ * Modificato per estrarre anche l'ID del video YouTube per il Lightbox
  *
  * @param int $count Number of videos to fetch.
- * @return array Array of video data (title, link, image, date).
+ * @return array Array of video data (title, link, image, date, video_id).
  */
 function santagatesi_get_latest_youtube_videos( $count = 4 ) {
     // Transient to cache the feed and avoid rate limiting
-    $cache_key = 'santagatesi_yt_videos';
+    $cache_key = 'santagatesi_yt_videos_lightbox'; // Changed cache key to avoid conflicts with previous version
     $cached_videos = get_transient( $cache_key );
 
     if ( false !== $cached_videos ) {
@@ -269,6 +284,7 @@ function santagatesi_get_latest_youtube_videos( $count = 4 ) {
         if ( $xml && isset( $xml->entry ) ) {
             foreach ( $xml->entry as $entry ) {
                 $ns_media = $entry->children('http://search.yahoo.com/mrss/');
+                $ns_yt = $entry->children('http://www.youtube.com/xml/schemas/2015');
 
                 // Get thumbnail from media:group -> media:thumbnail
                 $thumbnail = '';
@@ -277,21 +293,27 @@ function santagatesi_get_latest_youtube_videos( $count = 4 ) {
                     $thumbnail = (string) $thumbnail_attrs['url'];
                 }
 
-                // If thumbnail not found, try getting video ID from link and construct it
-                if ( empty( $thumbnail ) && isset( $entry->link ) ) {
-                    $link_attrs = $entry->link->attributes();
-                    $href = (string) $link_attrs['href'];
-                    parse_str( parse_url( $href, PHP_URL_QUERY ), $url_params );
+                $video_id = (string) $ns_yt->videoId;
+                $link = (string) $entry->link->attributes()->href;
+
+                // Fallbacks if XML parsing slightly differs
+                if ( empty( $video_id ) && !empty($link) ) {
+                    parse_str( parse_url( $link, PHP_URL_QUERY ), $url_params );
                     if ( isset( $url_params['v'] ) ) {
-                        $thumbnail = 'https://img.youtube.com/vi/' . $url_params['v'] . '/hqdefault.jpg';
+                        $video_id = $url_params['v'];
                     }
+                }
+
+                if ( empty( $thumbnail ) && !empty($video_id) ) {
+                    $thumbnail = 'https://img.youtube.com/vi/' . $video_id . '/hqdefault.jpg';
                 }
 
                 $videos[] = array(
                     'title'     => (string) $entry->title,
-                    'link'      => (string) $entry->link->attributes()->href,
+                    'link'      => $link,
                     'date'      => date( 'd/m/Y', strtotime( (string) $entry->published ) ),
                     'thumbnail' => $thumbnail,
+                    'video_id'  => $video_id,
                 );
             }
         }
@@ -302,27 +324,31 @@ function santagatesi_get_latest_youtube_videos( $count = 4 ) {
         $videos = array(
             array(
                 'title' => 'Processione dei Santi Gerardo e Leonardo',
-                'link' => 'https://www.youtube.com/user/nardino1000',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Dummy
                 'date' => '24/10/2022',
-                'thumbnail' => 'https://www.santagatesinelmondo.it/public/video/20221024_002729_0000.png'
+                'thumbnail' => 'https://www.santagatesinelmondo.it/public/video/20221024_002729_0000.png',
+                'video_id' => 'dQw4w9WgXcQ'
             ),
             array(
                 'title' => 'Celebrazione Liturgica per il 500esimo Parrocchia',
-                'link' => 'https://www.youtube.com/user/nardino1000',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'date' => '18/10/2022',
-                'thumbnail' => 'https://www.santagatesinelmondo.it/public/video/20221018_185402_0000.png'
+                'thumbnail' => 'https://www.santagatesinelmondo.it/public/video/20221018_185402_0000.png',
+                'video_id' => 'dQw4w9WgXcQ'
             ),
              array(
                 'title' => 'In Ricordo dei Nostri Cari Defunti',
-                'link' => 'https://www.youtube.com/user/nardino1000',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'date' => '25/01/2020',
-                'thumbnail' => 'https://www.santagatesinelmondo.it/public/video/Cattura.PNG'
+                'thumbnail' => 'https://www.santagatesinelmondo.it/public/video/Cattura.PNG',
+                'video_id' => 'dQw4w9WgXcQ'
             ),
             array(
                 'title' => 'Visita Virtuale Cimitero',
-                'link' => 'https://www.youtube.com/user/nardino1000',
+                'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                 'date' => '01/11/2019',
-                'thumbnail' => 'https://www.santagatesinelmondo.it/public/video/vISITA VIRTUALE(1).jpg'
+                'thumbnail' => 'https://www.santagatesinelmondo.it/public/video/vISITA VIRTUALE(1).jpg',
+                'video_id' => 'dQw4w9WgXcQ'
             ),
         );
     }

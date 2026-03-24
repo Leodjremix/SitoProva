@@ -17,10 +17,12 @@ $youtube_videos = santagatesi_get_latest_youtube_videos( 4 );
 		</header>
 
 		<?php if ( ! empty( $youtube_videos ) ) : ?>
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 				<?php foreach ( $youtube_videos as $video ) : ?>
 					<div class="tonal-panel video-card flex flex-col p-4 bg-[var(--color-surface-container-lowest)] rounded-[var(--radius-lg)] shadow-[var(--shadow-ambient)] transition-transform duration-300 hover:-translate-y-1">
-						<a href="<?php echo esc_url( $video['link'] ); ?>" target="_blank" rel="noopener noreferrer" class="block relative rounded-t-[var(--radius-lg)] overflow-hidden">
+
+                        <!-- Lightbox Trigger Button instead of Direct Link -->
+                        <button class="yt-lightbox-trigger block relative rounded-t-[var(--radius-lg)] overflow-hidden focus:outline-none focus:ring-4 focus:ring-[var(--color-accent)]/50" data-video-id="<?php echo esc_attr( $video['video_id'] ); ?>" aria-label="Riproduci il video <?php echo esc_attr( $video['title'] ); ?>">
 							<div class="video-thumbnail-container relative aspect-video bg-[var(--color-surface-container-low)]">
 								<?php if ( ! empty( $video['thumbnail'] ) ) : ?>
 									<img src="<?php echo esc_url( $video['thumbnail'] ); ?>" alt="<?php echo esc_attr( $video['title'] ); ?>" class="absolute inset-0 w-full h-full object-cover">
@@ -32,18 +34,19 @@ $youtube_videos = santagatesi_get_latest_youtube_videos( 4 );
 								<?php endif; ?>
 
 								<!-- Play Icon Overlay -->
-								<div class="video-play-icon absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 bg-black/20">
-                                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-transform duration-300 hover:scale-110">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="text-[var(--color-primary)] ml-2">
+								<div class="video-play-icon absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors duration-300">
+                                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl transform transition-transform duration-300 group-hover:scale-110">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" class="text-[#FF0000] ml-2">
                                             <path d="M3 22v-20l18 10-18 10z"/>
                                         </svg>
                                     </div>
 								</div>
 							</div>
-						</a>
+						</button>
+
 						<div class="video-info mt-4 flex-grow flex flex-col">
 							<p class="text-sm text-[var(--color-on-surface-muted)] mb-2 font-body font-semibold"><?php echo esc_html( $video['date'] ); ?></p>
-							<h3 class="text-xl font-bold leading-snug line-clamp-2 text-[var(--color-primary)]">
+							<h3 class="text-lg font-bold leading-snug line-clamp-2 text-[var(--color-primary)]">
 								<a href="<?php echo esc_url( $video['link'] ); ?>" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-accent)] transition-colors">
 									<?php echo esc_html( $video['title'] ); ?>
 								</a>
