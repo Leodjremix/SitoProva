@@ -30,8 +30,9 @@ add_action( 'after_setup_theme', 'santagatesi_setup' );
  * Custom Theme Initialization Script (Advanced Layouts)
  */
 function santagatesi_site_architecture_setup() {
-    if ( get_option( 'santagatesi_advanced_architecture_setup_complete' ) ) {
-        return; // Run only once for the new advanced layouts
+    // V2 Check: runs only once to scaffold the new frontend dashboard pages and flush rules.
+    if ( get_option( 'santagatesi_architecture_v2_setup_complete' ) ) {
+        return;
     }
 
     $created_pages = array();
@@ -165,8 +166,11 @@ function santagatesi_site_architecture_setup() {
         }
     }
 
-    // Mark advanced setup as complete
-    update_option( 'santagatesi_advanced_architecture_setup_complete', true );
+    // Update permalink structure one time only for the new CPTs and pages
+    flush_rewrite_rules( false );
+
+    // Mark advanced setup v2 as complete
+    update_option( 'santagatesi_architecture_v2_setup_complete', true );
 }
 add_action( 'init', 'santagatesi_site_architecture_setup' );
 
