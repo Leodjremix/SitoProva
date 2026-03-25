@@ -133,6 +133,15 @@ p {
 	padding: 0 var(--spacing-sm);
 }
 
+/* Fix per Astra: Assicura che i wrapper principali non limitino l'altezza */
+.site-content,
+#primary,
+.site-main {
+    height: 100%;
+    min-height: 100%;
+    display: block;
+}
+
 /* Contenitore ottimizzato per la lettura di articoli e pagine */
 .container-reading {
     width: 100%;
@@ -262,7 +271,8 @@ p {
 /* -------------------------------------------------------------------------- */
 .hero-section {
 	position: relative;
-	min-height: 95vh; /* Molto più ariosa, quasi a tutto schermo */
+	min-height: 95vh !important; /* Molto più ariosa, forzato su Astra defaults */
+	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
