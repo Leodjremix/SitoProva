@@ -104,12 +104,27 @@ function santagatesi_site_architecture_setup() {
         }
     }
 
-    // 2. Create Child Pages (Redazione)
+    // 2. Create Child Pages and Private Dashboard Pages
     $child_pages = array(
         'Redazione' => array(
             'slug'   => 'redazione',
             'parent' => $created_pages['Chi Siamo'],
             'content' => '<!-- wp:heading {"textAlign":"center","level":1} --><h1 class="wp-block-heading has-text-align-center">La Redazione</h1><!-- /wp:heading --><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Il team dietro Artemisium Web TV e il portale.</p><!-- /wp:paragraph --><!-- wp:columns --> <div class="wp-block-columns"><!-- wp:column {"className":"tonal-panel bg-white p-6 rounded-2xl text-center border shadow-sm"} --> <div class="wp-block-column tonal-panel bg-white p-6 rounded-2xl text-center border shadow-sm"><!-- wp:image {"align":"center","width":120,"height":120,"sizeSlug":"thumbnail","linkDestination":"none","className":"is-style-rounded"} --><figure class="wp-block-image aligncenter size-thumbnail is-resized is-style-rounded"><img src="' . get_stylesheet_directory_uri() . '/images/avatar-1.jpg" alt="Samantha Berardino" width="120" height="120"/></figure><!-- /wp:image --><!-- wp:heading {"textAlign":"center","level":3} --><h3 class="wp-block-heading has-text-align-center">Samantha Berardino</h3><!-- /wp:heading --><!-- wp:paragraph {"align":"center","textColor":"vivid-red"} --><p class="has-text-align-center has-vivid-red-color has-text-color"><strong>Direttore Responsabile</strong></p><!-- /wp:paragraph --></div> <!-- /wp:column --> <!-- wp:column {"className":"tonal-panel bg-white p-6 rounded-2xl text-center border shadow-sm"} --> <div class="wp-block-column tonal-panel bg-white p-6 rounded-2xl text-center border shadow-sm"><!-- wp:image {"align":"center","width":120,"height":120,"sizeSlug":"thumbnail","linkDestination":"none","className":"is-style-rounded"} --><figure class="wp-block-image aligncenter size-thumbnail is-resized is-style-rounded"><img src="' . get_stylesheet_directory_uri() . '/images/avatar-2.jpg" alt="Staff" width="120" height="120"/></figure><!-- /wp:image --><!-- wp:heading {"textAlign":"center","level":3} --><h3 class="wp-block-heading has-text-align-center">Staff Editoriale</h3><!-- /wp:heading --><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Redattori e Collaboratori</p><!-- /wp:paragraph --></div> <!-- /wp:column --></div> <!-- /wp:columns -->'
+        ),
+        'Area Redazione (News)' => array(
+            'slug'   => 'area-redazione',
+            'parent' => 0,
+            'content' => '<!-- wp:shortcode -->[form_inserimento_news]<!-- /wp:shortcode -->'
+        ),
+        'Area Redazione (Eventi)' => array(
+            'slug'   => 'area-redazione-eventi',
+            'parent' => 0,
+            'content' => '<!-- wp:shortcode -->[form_inserimento_evento]<!-- /wp:shortcode -->'
+        ),
+        'Impostazioni Front-end' => array(
+            'slug'   => 'impostazioni-sito',
+            'parent' => 0,
+            'content' => '<!-- wp:shortcode -->[form_impostazioni_sito]<!-- /wp:shortcode -->'
         ),
     );
 

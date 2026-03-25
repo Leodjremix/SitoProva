@@ -23,7 +23,10 @@ $includes = [
     '/inc/helpers.php',
     '/inc/shortcodes.php',
     '/inc/security.php',
-    '/inc/frontend-posting.php'
+    '/inc/frontend-posting.php',
+    '/inc/cpt-eventi.php',
+    '/inc/frontend-settings.php',
+    '/inc/frontend-eventi.php'
 ];
 
 foreach ( $includes as $file ) {

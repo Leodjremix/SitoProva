@@ -5,11 +5,8 @@
  * @package santagatesi
  */
 
-// Sostituita la vecchia immagine placeholder con una panoramica ad alta risoluzione
-// di Sant'Agata di Puglia per un forte impatto emotivo, come richiesto.
-// Nota: questa URL è un esempio indicativo basato sul contesto. In produzione andrebbe
-// usata una funzione come get_theme_mod() per permettere la customizzazione.
-$hero_bg_url = 'https://www.santagatesinelmondo.it/public/banner/cripta.jpg'; // Usiamo quella nota come fallback, ideale sarebbe una panoramica
+// Recupera l'URL dinamicamente dalle opzioni salvate tramite il modulo Admin Frontend
+$hero_bg_url = get_option( 'santagatesi_hero_image_url', 'https://www.santagatesinelmondo.it/public/banner/cripta.jpg' );
 $inline_style = "background-image: url('" . esc_url($hero_bg_url) . "');";
 ?>
 

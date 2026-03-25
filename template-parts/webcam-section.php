@@ -5,9 +5,10 @@
  * @package santagatesi
  */
 
-// Le URL delle webcam live fornite dal contesto.
-$webcam_1_url = 'https://www.liveincam.com/?w=588'; // Vico V. Emanuele
-$webcam_2_url = 'https://www.skylinewebcams.com/webcam/italia/puglia/foggia/santagata-di-puglia.html?w=453'; // Piazza Toni Santagata
+// Le URL delle webcam ora sono recuperate dinamicamente dal database
+// e aggiornabili dagli amministratori tramite il pannello di controllo front-end.
+$webcam_1_url = get_option( 'santagatesi_webcam_1_url', 'https://www.liveincam.com/?w=588' ); // Vico V. Emanuele
+$webcam_2_url = get_option( 'santagatesi_webcam_2_url', 'https://www.skylinewebcams.com/webcam/italia/puglia/foggia/santagata-di-puglia.html?w=453' ); // Piazza Toni Santagata
 ?>
 
 <section id="webcam" class="section">

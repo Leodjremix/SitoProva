@@ -7,12 +7,12 @@
 
 get_header();
 
-// Extract upcoming events using WP_Query for category 'eventi'
+// Extract upcoming events using WP_Query for custom post type 'santagatesi_evento'
 $args = array(
-	'post_type'      => 'post',
-	'posts_per_page' => 10,
-	'category_name'  => 'eventi', // Make sure this slug exists in WP
-	'orderby'        => 'date',
+	'post_type'      => 'santagatesi_evento',
+	'posts_per_page' => 15,
+    'meta_key'       => '_event_date',
+	'orderby'        => 'meta_value',
 	'order'          => 'ASC'
 );
 $eventi_query = new WP_Query( $args );
@@ -22,6 +22,20 @@ $current_month = date_i18n('F');
 $current_year = date('Y');
 $days_in_month = cal_days_in_month(CAL_GREGORIAN, date('m'), date('Y'));
 $first_day = date('w', strtotime(date('Y-m-01')));
+
+// Array per marcare i giorni con eventi sul calendario
+$days_with_events = array();
+if ( $eventi_query->have_posts() ) {
+    while ( $eventi_query->have_posts() ) {
+        $eventi_query->the_post();
+        $date_meta = get_post_meta( get_the_ID(), '_event_date', true );
+        if ( !empty($date_meta) && date('Y-m', strtotime($date_meta)) === date('Y-m') ) {
+            $days_with_events[] = date('j', strtotime($date_meta));
+        }
+    }
+    // Reset loop
+    $eventi_query->rewind_posts();
+}
 ?>
 
 <main id="primary" class="site-main bg-[var(--color-surface)]">
@@ -57,28 +71,36 @@ $first_day = date('w', strtotime(date('Y-m-01')));
 
 						// Actual days
 						for ($day = 1; $day <= $days_in_month; $day++) {
-							$is_today = ($day == date('j')) ? 'bg-[var(--color-primary)] text-white rounded-full font-bold shadow-md' : 'hover:bg-[var(--color-surface-container-low)] rounded-full cursor-pointer transition-colors hover:text-[var(--color-primary)] font-medium';
-							echo '<div class="p-2 w-10 h-10 mx-auto flex items-center justify-center ' . $is_today . '">' . $day . '</div>';
+							$is_today = ($day == date('j')) ? 'ring-2 ring-[var(--color-primary)]' : '';
+
+                            // Highlight event days
+                            $has_event_class = in_array($day, $days_with_events) ? 'bg-[var(--color-primary)] text-white shadow-md font-bold' : 'hover:bg-[var(--color-surface-container-low)] font-medium text-[var(--color-on-surface-muted)]';
+
+							echo '<div class="p-2 w-10 h-10 rounded-full mx-auto flex items-center justify-center cursor-pointer transition-colors ' . $is_today . ' ' . $has_event_class . '">' . $day . '</div>';
 						}
 						?>
 					</div>
 
 					<div class="mt-10 pt-6 border-t border-[var(--color-surface-container-low)] text-center">
-						<p class="text-sm text-[var(--color-on-surface-muted)] font-body italic">Clicca su una data per filtrare gli eventi. <br>(Feature coming soon)</p>
+						<p class="text-sm text-[var(--color-on-surface-muted)] font-body italic">I giorni evidenziati contengono eventi programmati.</p>
 					</div>
 				</div>
 
-				<!-- Events List (WP_Query) -->
+				<!-- Events List (WP_Query Custom Post Type) -->
 				<div class="lg:col-span-2 space-y-8">
 
 					<?php if ( $eventi_query->have_posts() ) : ?>
-						<?php while ( $eventi_query->have_posts() ) : $eventi_query->the_post(); ?>
+						<?php while ( $eventi_query->have_posts() ) : $eventi_query->the_post();
+                              $date_meta = get_post_meta( get_the_ID(), '_event_date', true );
+                              $loc_meta  = get_post_meta( get_the_ID(), '_event_location', true );
+                              $event_ts  = strtotime($date_meta);
+                        ?>
 							<article class="tonal-panel bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col sm:flex-row gap-8 p-8">
 
 								<!-- Date Badge -->
 								<div class="flex-shrink-0 w-28 h-28 rounded-2xl bg-[var(--color-surface-container-low)] flex flex-col items-center justify-center text-[var(--color-primary)] border border-transparent shadow-inner">
-									<span class="text-sm font-bold uppercase tracking-widest opacity-80 font-body"><?php echo get_the_date('M'); ?></span>
-									<span class="text-4xl font-extrabold leading-none mt-1 font-display"><?php echo get_the_date('d'); ?></span>
+									<span class="text-sm font-bold uppercase tracking-widest opacity-80 font-body"><?php echo $date_meta ? date_i18n('M', $event_ts) : 'N/A'; ?></span>
+									<span class="text-4xl font-extrabold leading-none mt-1 font-display"><?php echo $date_meta ? date_i18n('d', $event_ts) : '-'; ?></span>
 								</div>
 
 								<!-- Content -->
@@ -89,12 +111,14 @@ $first_day = date('w', strtotime(date('Y-m-01')));
 									<div class="text-[var(--color-on-surface-muted)] mb-6 line-clamp-2 text-base font-body leading-relaxed">
 										<?php the_excerpt(); ?>
 									</div>
-									<div class="mt-auto flex items-center gap-6 text-sm font-semibold text-[var(--color-accent)] font-body border-t border-[var(--color-surface-container-low)] pt-4">
-										<span class="flex items-center gap-2">
-											<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-											<?php echo get_the_time(); ?>
-										</span>
-										<a href="<?php the_permalink(); ?>" class="text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors ml-auto flex items-center gap-1 group">
+									<div class="mt-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 text-sm font-semibold text-[var(--color-accent)] font-body border-t border-[var(--color-surface-container-low)] pt-4">
+										<?php if ( ! empty($loc_meta) ) : ?>
+                                            <span class="flex items-center gap-2">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                                <?php echo esc_html($loc_meta); ?>
+                                            </span>
+                                        <?php endif; ?>
+										<a href="<?php the_permalink(); ?>" class="text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors sm:ml-auto flex items-center gap-1 group">
 											Scopri i dettagli
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
 										</a>
