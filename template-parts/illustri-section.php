@@ -7,7 +7,7 @@
 
 // Recupera i Personaggi Illustri che hanno la spunta "Visibile sul Frontend" (Meta _visibilita_frontend = 1)
 $args = array(
-	'post_type'      => 'santagatesi_illustri',
+	'post_type'      => 'personaggi_illustri',
 	'posts_per_page' => -1, // Mostra tutti
 	'post_status'    => 'publish',
 	'orderby'        => 'title',
@@ -42,10 +42,15 @@ if ( $illustri_query->have_posts() ) :
 
 				<article id="post-<?php the_ID(); ?>" <?php post_class( 'illustri-card tonal-panel flex flex-col bg-[var(--color-surface-container-lowest)] rounded-2xl shadow-lg border border-[var(--color-surface-container-low)] overflow-hidden transition-transform duration-300 hover:-translate-y-2 group' ); ?>>
 
+                    <?php
+                        $foto_url = get_post_meta( get_the_ID(), '_illustri_foto', true );
+                        $descrizione = get_post_meta( get_the_ID(), '_illustri_descrizione', true );
+                    ?>
+
 					<!-- Immagine Profilo -->
 					<div class="illustri-thumbnail relative w-full aspect-[4/5] bg-[var(--color-surface-container-low)] overflow-hidden">
-						<?php if ( has_post_thumbnail() ) : ?>
-							<?php the_post_thumbnail( 'large', array( 'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105', 'alt' => esc_attr( get_the_title() ) ) ); ?>
+						<?php if ( ! empty( $foto_url ) ) : ?>
+                            <img src="<?php echo esc_url( $foto_url ); ?>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="<?php echo esc_attr( get_the_title() ); ?>">
 						<?php else : ?>
 							<!-- Fallback Icon if no picture -->
 							<div class="absolute inset-0 flex items-center justify-center bg-[var(--color-surface-container-low)] text-[var(--color-on-surface-muted)]">
@@ -65,15 +70,9 @@ if ( $illustri_query->have_posts() ) :
 							</a>
 						</h3>
 
-						<!-- Estratto della biografia (se presente the_excerpt o tagliando the_content) -->
+						<!-- Estratto della biografia (tramite custom meta) -->
 						<div class="text-[var(--color-on-surface-muted)] text-sm font-body line-clamp-3 mb-4 flex-grow">
-							<?php
-								if ( has_excerpt() ) {
-									echo wp_trim_words( get_the_excerpt(), 20, '...' );
-								} else {
-									echo wp_trim_words( get_the_content(), 20, '...' );
-								}
-							?>
+							<?php echo wp_trim_words( wp_strip_all_tags( $descrizione ), 20, '...' ); ?>
 						</div>
 
 						<!-- Pulsante "Leggi tutto" -->

@@ -1,9 +1,9 @@
 <?php
 /**
- * The template for displaying the archive of "Santagatesi Illustri"
+ * Template Name: Personaggi Illustri
  *
- * This template automatically renders the cards for all published
- * Illustrious Citizens that have their visibility toggle turned ON.
+ * Questo template di pagina recupera automaticamente tutti i Personaggi Illustri
+ * (CPT 'personaggi_illustri') che hanno la visibilità attiva e li impagina a griglia.
  *
  * @package santagatesi
  */
@@ -39,7 +39,7 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 			<?php
 			// Query specifica per i personaggi "Visibili" (Toggle ON = 1)
 			$illustri_args = array(
-				'post_type'      => 'santagatesi_illustri',
+				'post_type'      => 'personaggi_illustri', // Using new updated slug
 				'posts_per_page' => -1, // Mostra tutti
 				'post_status'    => 'publish',
 				'orderby'        => 'title',
@@ -64,10 +64,16 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 						<!-- Inizio singola Card Generata Automaticamente -->
 						<article id="post-<?php the_ID(); ?>" <?php post_class( 'illustri-card tonal-panel flex flex-col bg-[var(--color-surface-container-lowest)] rounded-2xl shadow-[var(--shadow-ambient)] border border-[var(--color-surface-container-low)] overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-[var(--shadow-hover)] group h-full' ); ?>>
 
-							<!-- Immagine Profilo 4:5 -->
+							<!-- Fetch Custom Meta Fields -->
+                            <?php
+                                $foto_url = get_post_meta( get_the_ID(), '_illustri_foto', true );
+                                $descrizione = get_post_meta( get_the_ID(), '_illustri_descrizione', true );
+                            ?>
+
+                            <!-- Immagine Profilo 4:5 -->
 							<div class="illustri-thumbnail relative w-full aspect-[4/5] bg-[var(--color-surface-container-low)] overflow-hidden">
-								<?php if ( has_post_thumbnail() ) : ?>
-									<?php the_post_thumbnail( 'large', array( 'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105', 'alt' => esc_attr( get_the_title() ) ) ); ?>
+								<?php if ( ! empty( $foto_url ) ) : ?>
+									<img src="<?php echo esc_url( $foto_url ); ?>" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<?php echo esc_attr( get_the_title() ); ?>">
 								<?php else : ?>
 									<!-- Placeholder se non c'è foto -->
 									<div class="absolute inset-0 flex items-center justify-center bg-[var(--color-surface-container-low)] text-[var(--color-on-surface-muted)]">
@@ -91,15 +97,9 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 									</a>
 								</h3>
 
-								<!-- Estratto dinamico (se c'è The Excerpt usa quello, altrimenti taglia il contenuto) -->
+								<!-- Estratto della descrizione tramite Custom Meta -->
 								<div class="text-[var(--color-on-surface-muted)] text-sm font-body line-clamp-4 flex-grow mb-4 leading-relaxed">
-									<?php
-										if ( has_excerpt() ) {
-											echo wp_trim_words( get_the_excerpt(), 25, '...' );
-										} else {
-											echo wp_trim_words( get_the_content(), 25, '...' );
-										}
-									?>
+									<?php echo wp_trim_words( wp_strip_all_tags( $descrizione ), 25, '...' ); ?>
 								</div>
 
 							</div>

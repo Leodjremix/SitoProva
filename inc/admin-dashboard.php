@@ -276,8 +276,8 @@ function santagatesi_admin_dashboard_callback() {
                     <?php wp_nonce_field( 'santagatesi_save_content_visibility', 'santagatesi_admin_nonce' ); ?>
                     <input type="hidden" name="action" value="save_content_visibility">
 
-                    <h3><?php esc_html_e( 'Santagatesi Illustri', 'santagatesi' ); ?> <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=santagatesi_illustri' ) ); ?>" class="button button-small" style="margin-left: 10px;">+ Aggiungi</a></h3>
-                    <?php santagatesi_render_cpt_table( 'santagatesi_illustri', 'Nome' ); ?>
+                    <h3><?php esc_html_e( 'Santagatesi Illustri', 'santagatesi' ); ?> <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=personaggi_illustri' ) ); ?>" class="button button-small" style="margin-left: 10px;">+ Aggiungi</a></h3>
+                    <?php santagatesi_render_cpt_table( 'personaggi_illustri', 'Nome' ); ?>
 
                     <hr>
 
@@ -286,8 +286,8 @@ function santagatesi_admin_dashboard_callback() {
 
                     <hr>
 
-                    <h3><?php esc_html_e( 'Link Utili', 'santagatesi' ); ?> <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=santagatesi_links' ) ); ?>" class="button button-small" style="margin-left: 10px;">+ Aggiungi</a></h3>
-                    <?php santagatesi_render_cpt_table( 'santagatesi_links', 'Titolo Link' ); ?>
+                    <h3><?php esc_html_e( 'Link Utili', 'santagatesi' ); ?> <a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=link_utili' ) ); ?>" class="button button-small" style="margin-left: 10px;">+ Aggiungi</a></h3>
+                    <?php santagatesi_render_cpt_table( 'link_utili', 'Titolo Link' ); ?>
 
                     <div style="margin-top: 20px;">
                         <?php submit_button( __( 'Salva Visibilità Contenuti', 'santagatesi' ), 'primary', 'submit_visibility' ); ?>
@@ -353,7 +353,7 @@ function santagatesi_process_admin_dashboard_forms() {
     elseif ( 'save_content_visibility' === $action && isset( $_POST['submit_visibility'] ) ) {
 
         if ( isset( $_POST['content_visibility'] ) && is_array( $_POST['content_visibility'] ) ) {
-            $allowed_cpts = ['santagatesi_illustri', 'santagatesi_team', 'santagatesi_links'];
+            $allowed_cpts = ['personaggi_illustri', 'santagatesi_team', 'link_utili'];
 
             foreach ( $_POST['content_visibility'] as $post_id => $val ) {
                 $post_id = intval( $post_id );

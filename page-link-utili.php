@@ -36,9 +36,9 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 		<div class="container">
 
 			<?php
-			// 1. Recupera tutte le categorie ("link_category") che hanno almeno un link associato
+			// 1. Recupera tutte le categorie ("categorie_link") che hanno almeno un link associato
 			$terms = get_terms( array(
-				'taxonomy'   => 'link_category',
+				'taxonomy'   => 'categorie_link', // Updated taxonomy slug
 				'hide_empty' => true,
 			) );
 
@@ -49,14 +49,14 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 
 					// 2. Query: Per questa categoria, prendi solo i link con _visibilita_frontend = 1
 					$links_query = new WP_Query( array(
-						'post_type'      => 'santagatesi_links',
+						'post_type'      => 'link_utili', // Updated CPT slug
 						'posts_per_page' => -1,
 						'post_status'    => 'publish',
 						'orderby'        => 'title',
 						'order'          => 'ASC',
 						'tax_query'      => array(
 							array(
-								'taxonomy' => 'link_category',
+								'taxonomy' => 'categorie_link', // Updated taxonomy slug
 								'field'    => 'term_id',
 								'terms'    => $term->term_id,
 							),

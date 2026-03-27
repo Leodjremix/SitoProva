@@ -41,3 +41,15 @@ foreach ( $includes as $file ) {
         error_log( 'File mancante nel tema child Santagatesi: ' . $filepath );
     }
 }
+
+/**
+ * Temporary Rewrite Flush logic for CPT structural changes
+ * We only want this to run once when the new code hits the live server.
+ */
+function santagatesi_flush_rewrites_on_update() {
+    if ( ! get_option( 'santagatesi_cpt_refactor_flushed' ) ) {
+        flush_rewrite_rules();
+        update_option( 'santagatesi_cpt_refactor_flushed', true );
+    }
+}
+add_action( 'admin_init', 'santagatesi_flush_rewrites_on_update' );
