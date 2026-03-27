@@ -26,6 +26,8 @@ $includes = [
     '/inc/frontend-posting.php',
     '/inc/cpt-eventi.php',
     '/inc/cpt-illustri.php',
+    '/inc/cpt-team.php',
+    '/inc/cpt-links.php',
     '/inc/frontend-settings.php',
     '/inc/frontend-eventi.php',
     '/inc/admin-dashboard.php'

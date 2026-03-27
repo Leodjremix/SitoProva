@@ -76,31 +76,49 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 					</div>
 
 					<!-- Team/Staff Grid -->
-					<div class="mt-20">
-						<header class="text-center mb-16">
-							<h2 class="text-4xl font-bold text-[var(--color-primary)] font-display">La Redazione</h2>
-							<p class="text-[var(--color-on-surface-muted)] mt-4 font-body text-lg">Le persone dietro il progetto Artemisium.</p>
-						</header>
+                    <?php
+                    $team_query = new WP_Query([
+                        'post_type'      => 'santagatesi_team',
+                        'posts_per_page' => -1,
+                        'post_status'    => 'publish',
+                        'meta_query'     => [
+                            [
+                                'key'     => '_visibilita_frontend',
+                                'value'   => '1',
+                                'compare' => '='
+                            ]
+                        ]
+                    ]);
 
-						<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-							<!-- Placeholder Member Card -->
-							<div class="tonal-panel text-center bg-white transition-transform hover:-translate-y-2">
-								<div class="w-32 h-32 mx-auto rounded-full bg-[var(--color-surface-container-low)] mb-6 overflow-hidden shadow-lg border-4 border-white">
-									<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/avatar-1.jpg" alt="Team Member" class="w-full h-full object-cover" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'128\' height=\'128\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23003d6c\' stroke-width=\'1\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'></path><circle cx=\'12\' cy=\'7\' r=\'4\'></circle></svg>';">
-								</div>
-								<h3 class="text-2xl font-bold text-[var(--color-primary)] font-display">Samantha Berardino</h3>
-								<p class="text-[var(--color-accent)] font-semibold text-sm mt-2 uppercase tracking-wider font-body">Direttore Responsabile</p>
-							</div>
+                    if ( $team_query->have_posts() ) :
+                    ?>
+                        <div class="mt-20">
+                            <header class="text-center mb-16">
+                                <h2 class="text-4xl font-bold text-[var(--color-primary)] font-display">La Redazione e lo Staff</h2>
+                                <p class="text-[var(--color-on-surface-muted)] mt-4 font-body text-lg">Le persone dietro il progetto Artemisium e l'associazione.</p>
+                            </header>
 
-							<div class="tonal-panel text-center bg-white transition-transform hover:-translate-y-2">
-								<div class="w-32 h-32 mx-auto rounded-full bg-[var(--color-surface-container-low)] mb-6 overflow-hidden shadow-lg border-4 border-white">
-									<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/avatar-2.jpg" alt="Team Member" class="w-full h-full object-cover" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'128\' height=\'128\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23003d6c\' stroke-width=\'1\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'></path><circle cx=\'12\' cy=\'7\' r=\'4\'></circle></svg>';">
-								</div>
-								<h3 class="text-2xl font-bold text-[var(--color-primary)] font-display">Redazione</h3>
-								<p class="text-[var(--color-accent)] font-semibold text-sm mt-2 uppercase tracking-wider font-body">Staff Artemisium</p>
-							</div>
-						</div>
-					</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                                <?php while ( $team_query->have_posts() ) : $team_query->the_post();
+                                    $ruolo = get_post_meta( get_the_ID(), '_team_ruolo', true );
+                                ?>
+                                    <div class="tonal-panel text-center bg-white transition-transform hover:-translate-y-2 p-8 rounded-2xl shadow-[var(--shadow-ambient)]">
+                                        <div class="w-32 h-32 mx-auto rounded-full bg-[var(--color-surface-container-low)] mb-6 overflow-hidden shadow-lg border-4 border-white">
+                                            <?php if ( has_post_thumbnail() ) : ?>
+                                                <?php the_post_thumbnail( 'medium', ['class' => 'w-full h-full object-cover'] ); ?>
+                                            <?php else : ?>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="#0A2540" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="padding: 20px; opacity: 0.5;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                            <?php endif; ?>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-[var(--color-primary)] font-display"><?php the_title(); ?></h3>
+                                        <?php if ( $ruolo ) : ?>
+                                            <p class="text-[var(--color-accent)] font-semibold text-sm mt-2 uppercase tracking-wider font-body"><?php echo esc_html( $ruolo ); ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endwhile; wp_reset_postdata(); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
 				</article>
 			<?php endwhile; ?>
