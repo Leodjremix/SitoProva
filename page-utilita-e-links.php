@@ -36,9 +36,9 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 		<div class="container">
 
 			<?php
-			// 1. Recupera tutte le categorie ("categorie_link") che hanno almeno un link associato
+			// 1. Recupera tutte le categorie ("categorie_link" o vecchia "link_category") che hanno almeno un link associato
 			$terms = get_terms( array(
-				'taxonomy'   => 'categorie_link', // Updated taxonomy slug
+				'taxonomy'   => array('categorie_link', 'link_category'),
 				'hide_empty' => true,
 			) );
 
@@ -49,24 +49,35 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 
 					// 2. Query: Per questa categoria, prendi solo i link con _visibilita_frontend = 1
 					$links_query = new WP_Query( array(
-						'post_type'      => 'link_utili', // Updated CPT slug
+						'post_type'      => array('link_utili', 'santagatesi_links'), // Supports both new and old CPT slugs just in case
 						'posts_per_page' => -1,
 						'post_status'    => 'publish',
 						'orderby'        => 'title',
 						'order'          => 'ASC',
 						'tax_query'      => array(
+                            'relation' => 'OR',
 							array(
-								'taxonomy' => 'categorie_link', // Updated taxonomy slug
+								'taxonomy' => 'categorie_link',
+								'field'    => 'term_id',
+								'terms'    => $term->term_id,
+							),
+                            array(
+								'taxonomy' => 'link_category', // Supports old taxonomy
 								'field'    => 'term_id',
 								'terms'    => $term->term_id,
 							),
 						),
 						'meta_query'     => array(
+                            'relation' => 'OR',
 							array(
 								'key'     => '_visibilita_frontend',
 								'value'   => '1',
 								'compare' => '=',
 							),
+                            array(
+                                'key'     => '_visibilita_frontend',
+                                'compare' => 'NOT EXISTS'
+                            ),
 						),
 					) );
 

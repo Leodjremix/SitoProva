@@ -37,19 +37,24 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 		<div class="container">
 
 			<?php
-			// Query specifica per i personaggi "Visibili" (Toggle ON = 1)
+			// Query specifica per i personaggi "Visibili" (Toggle ON = 1) o senza meta (Retrocompatibilità)
 			$illustri_args = array(
-				'post_type'      => 'personaggi_illustri', // Using new updated slug
+				'post_type'      => array('personaggi_illustri', 'santagatesi_illustri'), // Accept old CPT slug to ensure data shows up if user hasn't recreated them yet
 				'posts_per_page' => -1, // Mostra tutti
 				'post_status'    => 'publish',
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'meta_query'     => array(
+                    'relation' => 'OR',
 					array(
 						'key'     => '_visibilita_frontend',
 						'value'   => '1',
-						'compare' => '=', // Filtro tassativo di visibilità
+						'compare' => '=', // Mostra se il toggle è attivo
 					),
+                    array(
+                        'key'     => '_visibilita_frontend',
+                        'compare' => 'NOT EXISTS' // Retrocompatibilità: Mostra anche se il post è vecchio e non ha ancora il meta _visibilita_frontend salvato
+                    ),
 				),
 			);
 

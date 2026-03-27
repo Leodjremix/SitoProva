@@ -7,17 +7,22 @@
 
 // Recupera i Personaggi Illustri che hanno la spunta "Visibile sul Frontend" (Meta _visibilita_frontend = 1)
 $args = array(
-	'post_type'      => 'personaggi_illustri',
+	'post_type'      => array('personaggi_illustri', 'santagatesi_illustri'), // Retrocompatibilità con i vecchi CPT creati prima del refactoring
 	'posts_per_page' => -1, // Mostra tutti
 	'post_status'    => 'publish',
 	'orderby'        => 'title',
 	'order'          => 'ASC',
 	'meta_query'     => array(
+        'relation' => 'OR',
 		array(
 			'key'     => '_visibilita_frontend',
 			'value'   => '1',
 			'compare' => '=', // Filtra strettamente solo chi ha valore "1" (attivo)
 		),
+        array(
+            'key'     => '_visibilita_frontend',
+            'compare' => 'NOT EXISTS' // Retrocompatibilità: mostra anche se creato prima che il toggle esistesse
+        ),
 	),
 );
 
