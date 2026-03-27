@@ -13,21 +13,21 @@ Text Domain: santagatesi
 */
 
 /* -------------------------------------------------------------------------- */
-/* CSS Variables - The Luminous Horizon (Light/Dark Mode Support)
+/* CSS Variables - Mediterraneo Elegante Palette (Light/Dark Mode Support)
 /* -------------------------------------------------------------------------- */
 :root {
 	/* Light Mode Colors (Default) */
-	--color-primary: #003d6c; /* Deep Mediterranean Blue */
-	--color-surface: #f7fafe;
-	--color-surface-container-low: #f1f4f8;
-	--color-surface-container-lowest: #ffffff;
-	--color-on-surface: #181c1f;
-	--color-on-surface-muted: #495057;
-	--color-accent: #0066cc;
+	--color-primary: #0A2540; /* Blu Notte Profondo (High Contrast) */
+	--color-surface: #F8FAFC; /* Bianco Calce Freddo (Anti-glare) */
+	--color-surface-container-low: #F1F5F9; /* Sfondo per card, sfondi alternati */
+	--color-surface-container-lowest: #FFFFFF; /* Interno delle card/pannelli */
+	--color-on-surface: #1E293B; /* Antracite per testi lunghi */
+	--color-on-surface-muted: #475569; /* Grigio Ardesia per info secondarie */
+	--color-accent: #C2410C; /* Terracotta Intenso / Ruggine (Vibrant CTA) */
 
 	/* Shadows & Layering */
-	--shadow-ambient: 0px 20px 40px rgba(24, 28, 31, 0.06);
-	--shadow-hover: 0px 30px 60px rgba(24, 28, 31, 0.1);
+	--shadow-ambient: 0px 20px 40px rgba(10, 37, 64, 0.04);
+	--shadow-hover: 0px 30px 60px rgba(10, 37, 64, 0.08);
 
 	/* Typography */
 	--font-display: 'Noto Serif', serif;
@@ -243,26 +243,27 @@ p {
 }
 
 .btn-primary {
-	background-color: var(--color-primary);
+	background-color: var(--color-accent); /* Terracotta Intenso per spiccare (CTA principale) */
 	color: #fff;
 	border: none;
 }
 
 .btn-primary:hover {
-	background-color: var(--color-accent);
+	background-color: var(--color-primary); /* Elegante Blu Notte all'hover */
 	color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 61, 108, 0.2);
+    box-shadow: 0 10px 20px rgba(194, 65, 12, 0.3); /* Ombra calda per richiamare la terracotta */
 }
 
 @media (prefers-color-scheme: dark) {
     .btn-primary {
         background-color: var(--color-accent);
-        color: #121212;
+        color: #fff;
     }
     .btn-primary:hover {
-        background-color: var(--color-primary);
-        box-shadow: 0 10px 20px rgba(100, 181, 246, 0.2);
+        background-color: var(--color-surface-container-low); /* Contatto morbido per dark mode */
+        color: var(--color-accent);
+        box-shadow: 0 10px 20px rgba(234, 88, 12, 0.2);
     }
 }
 
@@ -366,27 +367,28 @@ p {
 
 /* Bottoni speciali per sfondi scuri (Hero) */
 .btn-hero-primary {
-    background-color: #ffffff;
-    color: var(--color-primary);
+    background-color: var(--color-accent); /* Terracotta vibrante */
+    color: #ffffff;
     border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(194, 65, 12, 0.4); /* Ombra in tinta calda */
 }
 .btn-hero-primary:hover {
-    background-color: var(--color-surface-container-low);
-    color: var(--color-accent);
+    background-color: #9A3412; /* Sfumatura più scura di terracotta per hover */
+    color: #ffffff;
     transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 15px 40px rgba(154, 52, 18, 0.5);
 }
 
 .btn-hero-secondary {
-    background-color: transparent;
+    background-color: rgba(10, 37, 64, 0.4); /* Blu Notte semitrasparente */
     color: #ffffff;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 .btn-hero-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #ffffff;
+    color: var(--color-primary); /* Testo torna Blu Notte solido */
     border-color: #ffffff;
     transform: translateY(-3px);
 }
