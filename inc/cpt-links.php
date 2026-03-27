@@ -48,16 +48,42 @@ function santagatesi_register_cpt_links() {
 		'show_in_rest'          => false,
 	);
 	register_post_type( 'santagatesi_links', $args );
+
+    // Registra la Tassonomia (Categoria Link) per raggruppare visivamente i link
+	$tax_labels = array(
+		'name'              => _x( 'Categorie Link', 'taxonomy general name', 'santagatesi' ),
+		'singular_name'     => _x( 'Categoria Link', 'taxonomy singular name', 'santagatesi' ),
+		'search_items'      => __( 'Cerca Categoria', 'santagatesi' ),
+		'all_items'         => __( 'Tutte le Categorie', 'santagatesi' ),
+		'parent_item'       => __( 'Categoria Genitore', 'santagatesi' ),
+		'parent_item_colon' => __( 'Categoria Genitore:', 'santagatesi' ),
+		'edit_item'         => __( 'Modifica Categoria', 'santagatesi' ),
+		'update_item'       => __( 'Aggiorna Categoria', 'santagatesi' ),
+		'add_new_item'      => __( 'Aggiungi Nuova Categoria', 'santagatesi' ),
+		'new_item_name'     => __( 'Nuovo Nome Categoria', 'santagatesi' ),
+		'menu_name'         => __( 'Categorie', 'santagatesi' ),
+	);
+
+	$tax_args = array(
+		'hierarchical'      => true, // Come le categorie normali, per avere la checkbox
+		'labels'            => $tax_labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'link_category' ),
+	);
+
+	register_taxonomy( 'link_category', array( 'santagatesi_links' ), $tax_args );
 }
 add_action( 'init', 'santagatesi_register_cpt_links', 0 );
 
 /**
- * Registrazione Meta Boxes (URL e Visibilità)
+ * Registrazione Meta Boxes (Dettagli e Visibilità)
  */
 function santagatesi_add_links_meta_boxes() {
 	add_meta_box(
 		'santagatesi_link_details',
-		__( 'Destinazione Link', 'santagatesi' ),
+		__( 'Dettagli dell\'Attività / Link', 'santagatesi' ),
 		'santagatesi_link_details_callback',
 		'santagatesi_links',
 		'normal',
@@ -76,18 +102,34 @@ function santagatesi_add_links_meta_boxes() {
 add_action( 'add_meta_boxes', 'santagatesi_add_links_meta_boxes' );
 
 /**
- * Callback Meta Box: Dettagli (URL)
+ * Callback Meta Box: Dettagli (URL, Descrizione, Telefono)
  */
 function santagatesi_link_details_callback( $post ) {
 	wp_nonce_field( 'santagatesi_link_nonce_action', 'santagatesi_link_nonce' );
 	$url = get_post_meta( $post->ID, '_link_url', true );
+	$descrizione = get_post_meta( $post->ID, '_link_descrizione', true );
+	$telefono = get_post_meta( $post->ID, '_link_telefono', true );
 	?>
 	<table class="form-table">
         <tr>
-            <th><label for="link_url"><?php esc_html_e( 'Indirizzo Web (URL)', 'santagatesi' ); ?></label></th>
+            <th><label for="link_descrizione"><?php esc_html_e( 'Breve Descrizione', 'santagatesi' ); ?></label></th>
             <td>
-                <input type="url" id="link_url" name="link_url" value="<?php echo esc_attr( $url ); ?>" class="regular-text" placeholder="https://www.esempio.it" required>
-                <p class="description"><?php esc_html_e( 'Inserisci il link completo, includendo https://', 'santagatesi' ); ?></p>
+                <textarea id="link_descrizione" name="link_descrizione" rows="3" class="large-text" placeholder="Es. Ottimo ristorante tipico nel centro storico."><?php echo esc_textarea( $descrizione ); ?></textarea>
+                <p class="description"><?php esc_html_e( 'Descrivi brevemente l\'attività o il servizio fornito dal link.', 'santagatesi' ); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="link_telefono"><?php esc_html_e( 'Numero di Telefono', 'santagatesi' ); ?></label></th>
+            <td>
+                <input type="text" id="link_telefono" name="link_telefono" value="<?php echo esc_attr( $telefono ); ?>" class="regular-text" placeholder="es. +39 0881 123456">
+                <p class="description"><?php esc_html_e( 'Opzionale. Utile per attività commerciali (Ristoranti, B&B).', 'santagatesi' ); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="link_url"><?php esc_html_e( 'Indirizzo Web (Sito o Pagina FB)', 'santagatesi' ); ?></label></th>
+            <td>
+                <input type="url" id="link_url" name="link_url" value="<?php echo esc_attr( $url ); ?>" class="regular-text" placeholder="https://www.esempio.it">
+                <p class="description"><?php esc_html_e( 'Inserisci il link completo, includendo https://. Lascia vuoto se non hanno un sito web.', 'santagatesi' ); ?></p>
             </td>
         </tr>
     </table>
@@ -123,6 +165,16 @@ function santagatesi_save_links_meta_boxes( $post_id ) {
 	// Salva URL
 	if ( isset( $_POST['link_url'] ) ) {
 		update_post_meta( $post_id, '_link_url', esc_url_raw( wp_unslash( $_POST['link_url'] ) ) );
+	}
+
+    // Salva Descrizione
+	if ( isset( $_POST['link_descrizione'] ) ) {
+		update_post_meta( $post_id, '_link_descrizione', sanitize_textarea_field( wp_unslash( $_POST['link_descrizione'] ) ) );
+	}
+
+    // Salva Telefono
+	if ( isset( $_POST['link_telefono'] ) ) {
+		update_post_meta( $post_id, '_link_telefono', sanitize_text_field( wp_unslash( $_POST['link_telefono'] ) ) );
 	}
 
 	// Salva Visibilità
