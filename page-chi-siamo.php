@@ -8,8 +8,15 @@
 get_header();
 
 // Setup a fallback image using the requested dynamic path method
-$hero_bg = get_stylesheet_directory_uri() . '/images/chi-siamo-bg.jpg';
-$inline_style = "background-image: url('https://www.santagatesinelmondo.it/public/header/fratelli%20emigranti.jpg');"; // Placeholder from context if dynamic image is missing
+$hero_bg_fallback = 'https://www.santagatesinelmondo.it/public/header/fratelli%20emigranti.jpg';
+$hero_bg_dynamic  = get_option( 'santagatesi_img_chisiamo', $hero_bg_fallback );
+
+// If the dynamic option exists but is somehow empty, fallback
+if ( empty( $hero_bg_dynamic ) ) {
+    $hero_bg_dynamic = $hero_bg_fallback;
+}
+
+$inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 ?>
 
 <main id="primary" class="site-main bg-[var(--color-surface)]">

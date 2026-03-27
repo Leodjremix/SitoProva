@@ -24,7 +24,10 @@ get_header();
 		// 3. News Section (Latest 3 posts)
 		get_template_part( 'template-parts/news-section' );
 
-        // 3.5. Donation Section
+        // 3.5. Santagatesi Illustri Section (Custom Post Type Grid)
+        get_template_part( 'template-parts/illustri-section' );
+
+        // 3.8. Donation Section
         get_template_part( 'template-parts/donation-section' );
 
 		// 4. YouTube Video Gallery Section
