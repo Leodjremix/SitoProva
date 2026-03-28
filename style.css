@@ -401,6 +401,35 @@ body {
     padding-top: 100px;
 }
 
+/* Override Astra's default display properties to fix mobile navbar squishing */
+@media (max-width: 1023px) {
+    .main-navigation,
+    #site-navigation {
+        display: none !important;
+    }
+    #mobile-menu-toggle {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    #mobile-menu-toggle,
+    #mobile-navigation {
+        display: none !important;
+    }
+    .main-navigation,
+    #site-navigation {
+        display: flex !important;
+    }
+}
+
+/* Ensure mobile navigation is displayed as block so transform works properly */
+@media (max-width: 1023px) {
+    #mobile-navigation {
+        display: block !important;
+    }
+}
+
 .main-navigation .menu-item { position: relative; }
 .main-navigation .menu-item a {
     font-weight: 600;
