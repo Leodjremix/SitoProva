@@ -28,6 +28,7 @@ $includes = [
     '/inc/cpt-illustri.php',
     '/inc/cpt-team.php',
     '/inc/cpt-links.php',
+    '/inc/cpt-media.php',
     '/inc/frontend-settings.php',
     '/inc/frontend-eventi.php',
     '/inc/admin-dashboard.php'
@@ -109,10 +110,10 @@ function santagatesi_guestbook_comment_format( $comment, $args, $depth ) {
 
             <div class="comment-content text-[var(--color-on-surface)] font-body leading-relaxed text-base italic text-gray-800">
                 <?php
-                // Dropcap decoration
+                // Dropcap decoration (UTF-8 safe)
                 $content = get_comment_text();
-                $first_letter = substr($content, 0, 1);
-                $rest = substr($content, 1);
+                $first_letter = mb_substr($content, 0, 1, 'UTF-8');
+                $rest = mb_substr($content, 1, null, 'UTF-8');
                 echo '<span class="text-2xl font-bold font-display text-[var(--color-accent)] leading-none">' . esc_html($first_letter) . '</span>' . esc_html($rest);
                 ?>
             </div><!-- .comment-content -->
