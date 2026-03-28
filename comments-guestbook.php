@@ -45,8 +45,8 @@ if ( post_password_required() ) {
 
 		<?php the_comments_navigation(); ?>
 
-		<!-- Griglia Saluti -->
-		<ol class="comment-list grid grid-cols-1 md:grid-cols-2 gap-10 mb-20">
+		<!-- Griglia Saluti (Masonry) -->
+		<ol class="comment-list columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 mb-20 relative">
 			<?php
 			wp_list_comments(
 				array(
@@ -88,23 +88,27 @@ if ( post_password_required() ) {
 		'comment_notes_before' => '<p class="comment-notes text-[var(--color-on-surface-muted)] text-sm mb-8 font-body"><span id="email-notes">' . __( 'Il tuo indirizzo email non sarà pubblicato.', 'santagatesi' ) . '</span></p>',
 
 		// Campi Testo
-		'comment_field'        => '<div class="comment-form-comment relative"><label for="comment" class="sr-only">' . _x( 'Messaggio', 'noun', 'santagatesi' ) . '</label><textarea id="comment" name="comment" cols="45" rows="6" maxlength="65525" required="required" placeholder="Scrivi il tuo messaggio qui..." class="w-full bg-[var(--color-surface-container-low)] border-none text-[var(--color-on-surface)] rounded-2xl p-6 focus:ring-4 focus:ring-[var(--color-accent)]/20 outline-none transition-shadow resize-y placeholder-[var(--color-on-surface-muted)] font-body shadow-inner text-lg"></textarea></div>',
+		'comment_field'        => '<div class="comment-form-comment relative col-span-1 md:col-span-2"><label for="comment" class="sr-only">' . _x( 'Messaggio', 'noun', 'santagatesi' ) . '</label><textarea id="comment" name="comment" cols="45" rows="6" maxlength="65525" required="required" placeholder="Il tuo pensiero, un ricordo, un saluto..." class="w-full bg-yellow-50/50 backdrop-blur-sm border border-yellow-200 text-gray-800 rounded-2xl p-6 focus:ring-4 focus:ring-yellow-400/30 outline-none transition-all resize-y placeholder-gray-500 font-body shadow-inner text-lg focus:bg-yellow-50 hover:shadow-md"></textarea><div class="absolute bottom-4 right-6 text-gray-400"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div></div>',
 
 		// Campi Input
 		'fields'               => array(
-			'author' => '<div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="comment-form-author relative">' .
+			'author' => '<div class="grid grid-cols-1 md:grid-cols-2 gap-8 col-span-1 md:col-span-2"><div class="comment-form-author relative group">' .
 						'<label for="author" class="sr-only">' . __( 'Nome', 'santagatesi' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label>' .
-						'<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" maxlength="245"' . $html_req . ' placeholder="Nome *" class="w-full bg-[var(--color-surface-container-low)] border-none text-[var(--color-on-surface)] rounded-2xl p-5 focus:ring-4 focus:ring-[var(--color-accent)]/20 outline-none transition-shadow placeholder-[var(--color-on-surface-muted)] font-body shadow-inner text-lg" /></div>',
-			'email'  => '<div class="comment-form-email relative">' .
+						'<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[var(--color-accent)] transition-colors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>' .
+						'<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" maxlength="245"' . $html_req . ' placeholder="Il tuo Nome *" class="w-full pl-12 bg-white border border-gray-200 text-gray-800 rounded-xl p-4 focus:ring-4 focus:ring-[var(--color-accent)]/20 outline-none transition-all placeholder-gray-400 font-body shadow-sm text-lg hover:border-gray-300 focus:border-[var(--color-accent)]" /></div>',
+			'email'  => '<div class="comment-form-email relative group">' .
 						'<label for="email" class="sr-only">' . __( 'Email', 'santagatesi' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label>' .
-						'<input id="email" name="email" type="email" value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30" maxlength="100" aria-describedby="email-notes"' . $html_req . ' placeholder="Email *" class="w-full bg-[var(--color-surface-container-low)] border-none text-[var(--color-on-surface)] rounded-2xl p-5 focus:ring-4 focus:ring-[var(--color-accent)]/20 outline-none transition-shadow placeholder-[var(--color-on-surface-muted)] font-body shadow-inner text-lg" /></div></div>',
+						'<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[var(--color-accent)] transition-colors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>' .
+						'<input id="email" name="email" type="email" value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30" maxlength="100" aria-describedby="email-notes"' . $html_req . ' placeholder="Indirizzo Email *" class="w-full pl-12 bg-white border border-gray-200 text-gray-800 rounded-xl p-4 focus:ring-4 focus:ring-[var(--color-accent)]/20 outline-none transition-all placeholder-gray-400 font-body shadow-sm text-lg hover:border-gray-300 focus:border-[var(--color-accent)]" /></div></div>',
 			'url'    => '<div class="comment-form-url hidden">' .
 						'<label for="url">' . __( 'Website', 'santagatesi' ) . '</label>' .
 						'<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_author_url'] ) . '" size="30" maxlength="200" /></div>',
 		),
 	);
 
+	echo '<div class="bg-gray-50/50 p-8 rounded-3xl border border-gray-100 shadow-sm">';
 	comment_form( $args );
+	echo '</div>';
 	?>
 
 </div><!-- #comments -->

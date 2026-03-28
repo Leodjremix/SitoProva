@@ -53,3 +53,92 @@ function santagatesi_flush_rewrites_on_update() {
     }
 }
 add_action( 'admin_init', 'santagatesi_flush_rewrites_on_update' );
+
+/**
+ * Custom Comment Format for Guestbook (Masonry/Polaroid Style)
+ */
+function santagatesi_guestbook_comment_format( $comment, $args, $depth ) {
+    $tag = ( 'div' === $args['style'] ) ? 'div' : 'li';
+
+    // Array of slight rotations to give a random, organic bulletin board feel
+    $rotations = array('-rotate-1', 'rotate-1', '-rotate-2', 'rotate-2', 'rotate-0');
+    $random_rotation = $rotations[array_rand($rotations)];
+
+    // Array of subtle background tints for variety
+    $bg_colors = array('bg-yellow-50', 'bg-blue-50', 'bg-pink-50', 'bg-green-50', 'bg-purple-50');
+    $random_bg = $bg_colors[array_rand($bg_colors)];
+?>
+    <<?php echo $tag; ?> id="comment-<?php comment_ID(); ?>" <?php comment_class( empty( $args['has_children'] ) ? 'mb-6 break-inside-avoid relative group transition-transform duration-300 hover:scale-105 hover:z-10' : 'parent mb-6 break-inside-avoid relative group transition-transform duration-300 hover:scale-105 hover:z-10', $comment ); ?>>
+
+        <article id="div-comment-<?php comment_ID(); ?>" class="comment-body p-6 rounded-xl border border-[var(--color-surface-container-low)] shadow-sm hover:shadow-lg transition-shadow <?php echo esc_attr( $random_bg ); ?> <?php echo esc_attr( $random_rotation ); ?>">
+
+            <!-- Pin decoration (Pushpin) -->
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-red-400 border border-red-600 shadow-md flex items-center justify-center z-10">
+                <div class="w-2 h-2 rounded-full bg-white opacity-60"></div>
+                <div class="w-[2px] h-4 bg-gray-400 absolute -bottom-3 left-1/2 -translate-x-1/2 -z-10 shadow-sm"></div>
+            </div>
+
+            <footer class="comment-meta flex items-center gap-4 mb-4 border-b border-black/5 pb-4 mt-2">
+                <div class="comment-author vcard flex-shrink-0">
+                    <?php
+                    if ( 0 != $args['avatar_size'] ) {
+                        echo get_avatar( $comment, $args['avatar_size'], '', '', array( 'class' => 'rounded-full border-2 border-white shadow-sm' ) );
+                    }
+                    ?>
+                </div><!-- .comment-author -->
+
+                <div class="comment-metadata flex flex-col justify-center">
+                    <b class="fn text-lg font-semibold text-[var(--color-primary)] font-display">
+                        <?php echo get_comment_author_link( $comment ); ?>
+                    </b>
+                    <div class="text-xs text-[var(--color-on-surface-muted)] font-body flex items-center gap-2">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <time datetime="<?php comment_time( 'c' ); ?>">
+                            <?php
+                            printf(
+                                /* translators: 1: Comment date, 2: Comment time. */
+                                esc_html__( '%1$s alle %2$s', 'santagatesi' ),
+                                get_comment_date( '', $comment ),
+                                get_comment_time()
+                            );
+                            ?>
+                        </time>
+                    </div>
+                </div><!-- .comment-metadata -->
+            </footer><!-- .comment-meta -->
+
+            <div class="comment-content text-[var(--color-on-surface)] font-body leading-relaxed text-base italic text-gray-800">
+                <?php
+                // Dropcap decoration
+                $content = get_comment_text();
+                $first_letter = substr($content, 0, 1);
+                $rest = substr($content, 1);
+                echo '<span class="text-2xl font-bold font-display text-[var(--color-accent)] leading-none">' . esc_html($first_letter) . '</span>' . esc_html($rest);
+                ?>
+            </div><!-- .comment-content -->
+
+            <?php if ( '0' == $comment->comment_approved ) : ?>
+                <p class="comment-awaiting-moderation mt-4 text-sm text-amber-600 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                    <?php esc_html_e( 'Il tuo saluto è in attesa di moderazione.', 'santagatesi' ); ?>
+                </p>
+            <?php endif; ?>
+
+            <div class="reply mt-4 flex justify-end">
+                <?php
+                comment_reply_link(
+                    array_merge(
+                        $args,
+                        array(
+                            'add_below' => 'div-comment',
+                            'depth'     => $depth,
+                            'max_depth' => $args['max_depth'],
+                            'before'    => '<div class="reply text-sm font-medium text-[var(--color-accent)] hover:underline flex items-center gap-1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>',
+                            'after'     => '</div>',
+                        )
+                    )
+                );
+                ?>
+            </div>
+        </article><!-- .comment-body -->
+<?php
+}
