@@ -10,8 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function santagatesi_scripts() {
-	// Enqueue main stylesheet.
-	wp_enqueue_style( 'santagatesi-style', get_stylesheet_uri(), array(), wp_get_theme()->get( 'Version' ) );
+	// Enqueue main stylesheet with time() for cache busting during active development/design phase
+	wp_enqueue_style( 'santagatesi-style', get_stylesheet_uri(), array(), time() );
 
     // Add Noto Serif and Manrope fonts from Google Fonts
     wp_enqueue_style( 'santagatesi-fonts', 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap', array(), null );

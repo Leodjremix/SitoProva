@@ -15,7 +15,8 @@ Text Domain: santagatesi
 /* -------------------------------------------------------------------------- */
 /* CSS Variables - Azzurro & Blu Luminoso (UI Pulita e Moderna)
 /* -------------------------------------------------------------------------- */
-:root {
+/* Forziamo Astra a usare le nostre variabili globali aggiungendo body per maggiore specificità */
+:root, body {
 	/* Light Mode Colors (Default) */
 	--color-primary: #00529B; /* Blu Classico Istituzionale - Titoli e Navigazione */
 	--color-surface: #F4F9FD; /* Azzurro Ghiaccio chiarissimo - Sfondo principale arioso */
@@ -46,7 +47,7 @@ Text Domain: santagatesi
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root, body {
         /* Dark Mode Colors - Adattata per rimanere "Luminosa" usando blu profondi invece di neri cupi */
         --color-primary: #BAE6FD; /* Azzurro chiarissimo per i titoli */
         --color-surface: #0B1E36; /* Blu Abisso - Molto elegante, riposante per gli occhi */

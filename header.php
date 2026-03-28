@@ -229,52 +229,58 @@
 	</script>
 
     <style>
-        /* Stili avanzati per il menu mobile: animazione a tendina */
+        /* Stili avanzati per il menu mobile: override forzati per bypassare Astra e Cache */
         .mobile-nav-wrapper .menu-item > a {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--color-on-surface);
-            border-bottom: 1px solid var(--color-surface-container-low);
-            transition: color 0.3s ease;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 1rem 0 !important;
+            font-size: 1.25rem !important;
+            font-weight: 600 !important;
+            color: var(--color-on-surface) !important;
+            border-bottom: 1px solid var(--color-surface-container-low) !important;
+            transition: color 0.3s ease !important;
         }
 
         .mobile-nav-wrapper .menu-item > a:hover {
-            color: var(--color-primary);
+            color: var(--color-primary) !important;
         }
 
-        .mobile-nav-wrapper .sub-menu {
+        /* Forza Astra a non bloccare il sottomenu e a renderlo gestibile dal nostro max-height */
+        .mobile-nav-wrapper ul.sub-menu {
+            display: block !important; /* Overrides Astra's display:none */
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            padding-left: 1rem;
-            background-color: var(--color-surface-container-low);
-            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out, margin 0.3s ease-out !important;
+            padding-left: 1rem !important;
+            background-color: var(--color-surface-container-low) !important;
+            border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+            margin: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
 
-        .mobile-nav-wrapper .sub-menu.is-open {
-            /* max-height gestito dinamicamente via JS */
-            margin-bottom: 0.5rem;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
+        .mobile-nav-wrapper ul.sub-menu.is-open {
+            /* max-height is set by JS inline, but we ensure padding/margin expand nicely */
+            margin-bottom: 0.5rem !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
         }
 
-        .mobile-nav-wrapper .sub-menu a {
+        .mobile-nav-wrapper ul.sub-menu a {
             font-size: 1.1rem !important;
             padding: 0.75rem 1rem !important;
             color: var(--color-on-surface-muted) !important;
             font-family: var(--font-body) !important;
             font-weight: 500 !important;
             border-bottom: none !important;
-            border-left: 2px solid transparent;
+            border-left: 2px solid transparent !important;
+            display: block !important;
         }
 
-        .mobile-nav-wrapper .sub-menu a:hover {
+        .mobile-nav-wrapper ul.sub-menu a:hover {
             color: var(--color-accent) !important;
-            border-left-color: var(--color-accent);
+            border-left-color: var(--color-accent) !important;
             background-color: transparent !important;
         }
     </style>
