@@ -26,7 +26,7 @@
 
 	<!-- Sticky Header -->
 	<header id="masthead" class="site-header fixed top-0 left-0 w-full z-50 transition-all duration-300">
-		<div class="header-inner bg-[var(--color-surface-container-lowest)]/95 backdrop-blur-md border-b border-[var(--color-surface-container-low)] shadow-sm transition-all duration-300 py-2">
+		<div class="header-inner bg-[var(--color-surface-container-lowest)] backdrop-blur-md border-b border-[var(--color-surface-container-low)] shadow-sm transition-all duration-300 py-2">
 			<div class="container mx-auto px-4 flex justify-between items-center">
 
 				<!-- Logo / Site Branding -->
@@ -70,7 +70,7 @@
 		</div>
 
 		<!-- Mobile Navigation Panel (Off-Canvas/Fullscreen) -->
-		<div id="mobile-navigation" class="fixed inset-0 bg-[var(--color-surface)]/98 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-500 ease-in-out lg:hidden overflow-y-auto" role="dialog" aria-modal="true" aria-label="Menu Navigazione Mobile">
+		<div id="mobile-navigation" class="fixed inset-0 bg-[var(--color-surface-container-lowest)] backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-500 ease-in-out lg:hidden overflow-y-auto" role="dialog" aria-modal="true" aria-label="Menu Navigazione Mobile">
 			<div class="container px-4 py-28 min-h-screen flex flex-col">
 				<nav class="mobile-nav-wrapper w-full">
 					<?php
@@ -237,7 +237,7 @@
             padding: 1rem 0 !important;
             font-size: 1.25rem !important;
             font-weight: 600 !important;
-            color: var(--color-on-surface) !important;
+            color: var(--color-on-surface-muted) !important;
             border-bottom: 1px solid var(--color-surface-container-low) !important;
             transition: color 0.3s ease !important;
         }

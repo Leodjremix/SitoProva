@@ -440,15 +440,15 @@ body {
     }
 }
 
-.mobile-nav-wrapper { background-color: var(--color-surface); }
+.mobile-nav-wrapper { background-color: var(--color-surface-container-lowest); }
 .mobile-nav-wrapper .menu-item { margin-bottom: 0.5rem; }
 .mobile-nav-wrapper .menu-item a {
-    display: block; padding: 1rem; color: var(--color-primary);
+    display: block; padding: 1rem; color: var(--color-on-surface-muted);
     font-size: 1.5rem; font-family: var(--font-display); font-weight: 700;
     transition: background-color 0.2s ease, color 0.2s ease; border-radius: var(--radius-md);
 }
 .mobile-nav-wrapper .menu-item a:active, .mobile-nav-wrapper .menu-item a:hover {
-    background-color: var(--color-surface-container-low); color: var(--color-accent);
+    background-color: var(--color-surface-container-low); color: var(--color-primary);
 }
 
 .hamburger-icon .line { background-color: var(--color-primary); transform-origin: center; }
