@@ -32,8 +32,29 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 		</div>
 	</section>
 
+    <!-- Banner Illustrativo Elegante Sotto la Hero -->
+    <section class="w-full bg-[var(--color-surface)] py-12 border-b border-[var(--color-surface-container-low)]">
+        <div class="container">
+            <div class="relative w-full rounded-3xl overflow-hidden shadow-[var(--shadow-ambient)] border-4 border-white aspect-[21/9] md:aspect-[3/1] bg-[var(--color-surface-container-low)]">
+                <!-- Using a placeholder pattern that fits the historical/elegant vibe since we don't have a specific uploaded image yet -->
+                <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/images/illustri-banner.jpg' ); ?>" onerror="this.src='https://images.unsplash.com/photo-1577985051167-0d49eec21977?auto=format&fit=crop&q=80&w=2000'" class="absolute inset-0 w-full h-full object-cover" alt="Galleria Storica Santagatesi Illustri">
+
+                <!-- Sfumatura per fondere l'immagine con il design -->
+                <div class="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)]/40 to-transparent mix-blend-multiply"></div>
+
+                <!-- Etichetta decorativa -->
+                <div class="absolute bottom-6 left-6 md:bottom-10 md:left-10 bg-white/90 backdrop-blur-md py-3 px-6 rounded-xl shadow-lg border border-white/50">
+                    <span class="text-[var(--color-primary)] font-display font-bold text-lg md:text-xl flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        L'Eredità di Sant'Agata
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
 	<!-- Griglia Automatica delle Card -->
-	<section class="section mt-16">
+	<section class="section mt-8">
 		<div class="container">
 
 			<?php
