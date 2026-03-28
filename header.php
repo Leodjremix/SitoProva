@@ -171,14 +171,15 @@
 			}
 		});
 
-        // Dropdown toggle for Mobile (Vanilla JS)
+        // Accordion Dropdown toggle for Mobile (Vanilla JS, smooth height transition)
         const mobileMenuItemsWithChildren = document.querySelectorAll('.mobile-nav-wrapper .menu-item-has-children > a');
 
         mobileMenuItemsWithChildren.forEach(item => {
             // Aggiungiamo un'icona freccia
             const arrow = document.createElement('span');
-            arrow.innerHTML = '▼';
-            arrow.className = 'float-right text-sm transition-transform duration-300 opacity-50';
+            // Using an SVG chevron for a cleaner look
+            arrow.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+            arrow.className = 'float-right transition-transform duration-300 opacity-70';
             item.appendChild(arrow);
 
             item.addEventListener('click', function(e) {
@@ -187,24 +188,40 @@
                 const subMenu = parent.querySelector('.sub-menu');
 
                 if (subMenu) {
-                    const isExpanded = subMenu.style.display === 'block';
+                    const isExpanded = subMenu.classList.contains('is-open');
 
-                    // Close all other submenus at same level
+                    // Close all other submenus at same level (Accordion logic)
                     const siblings = parent.parentElement.children;
                     for (let sibling of siblings) {
                         if (sibling !== parent) {
                             const siblingSub = sibling.querySelector('.sub-menu');
                             const siblingArrow = sibling.querySelector('a span');
-                            if (siblingSub) {
-                                siblingSub.style.display = 'none';
+                            if (siblingSub && siblingSub.classList.contains('is-open')) {
+                                siblingSub.style.maxHeight = null;
+                                siblingSub.classList.remove('is-open');
                                 if (siblingArrow) siblingArrow.style.transform = 'rotate(0deg)';
                             }
                         }
                     }
 
-                    // Toggle current
-                    subMenu.style.display = isExpanded ? 'none' : 'block';
-                    arrow.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+                    // Toggle current smoothly using max-height
+                    if (isExpanded) {
+                        subMenu.style.maxHeight = null;
+                        subMenu.classList.remove('is-open');
+                        arrow.style.transform = 'rotate(0deg)';
+                    } else {
+                        subMenu.classList.add('is-open');
+                        subMenu.style.maxHeight = subMenu.scrollHeight + "px";
+                        arrow.style.transform = 'rotate(180deg)';
+
+                        // Assicuriamoci che se il sottomenu ha a sua volta sottomenu (nested),
+                        // l'altezza massima si adatti ricalcolandola
+                        setTimeout(() => {
+                            if (subMenu.classList.contains('is-open')) {
+                                subMenu.style.maxHeight = 'none'; // Rimuove il limite per permettere espansioni interne
+                            }
+                        }, 300); // 300ms matches the CSS transition duration
+                    }
                 }
             });
         });
@@ -212,24 +229,52 @@
 	</script>
 
     <style>
-        /* Aggiunta dinamica per sub-menu mobile che non è in style.css */
-        .mobile-nav-wrapper .sub-menu {
-            display: none;
-            padding-left: 1rem;
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
-            border-left: 2px solid var(--color-surface-container-low);
+        /* Stili avanzati per il menu mobile: animazione a tendina */
+        .mobile-nav-wrapper .menu-item > a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-on-surface);
+            border-bottom: 1px solid var(--color-surface-container-low);
+            transition: color 0.3s ease;
         }
+
+        .mobile-nav-wrapper .menu-item > a:hover {
+            color: var(--color-primary);
+        }
+
+        .mobile-nav-wrapper .sub-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding-left: 1rem;
+            background-color: var(--color-surface-container-low);
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+        }
+
+        .mobile-nav-wrapper .sub-menu.is-open {
+            /* max-height gestito dinamicamente via JS */
+            margin-bottom: 0.5rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
         .mobile-nav-wrapper .sub-menu a {
             font-size: 1.1rem !important;
             padding: 0.75rem 1rem !important;
-            color: var(--color-on-surface) !important;
+            color: var(--color-on-surface-muted) !important;
             font-family: var(--font-body) !important;
             font-weight: 500 !important;
-            background-color: transparent !important;
+            border-bottom: none !important;
+            border-left: 2px solid transparent;
         }
+
         .mobile-nav-wrapper .sub-menu a:hover {
-            color: var(--color-primary) !important;
-            background-color: var(--color-surface-container-low) !important;
+            color: var(--color-accent) !important;
+            border-left-color: var(--color-accent);
+            background-color: transparent !important;
         }
     </style>

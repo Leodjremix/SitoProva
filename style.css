@@ -13,21 +13,21 @@ Text Domain: santagatesi
 */
 
 /* -------------------------------------------------------------------------- */
-/* CSS Variables - Mediterraneo Elegante Palette (Light/Dark Mode Support)
+/* CSS Variables - Azzurro & Blu Luminoso (UI Pulita e Moderna)
 /* -------------------------------------------------------------------------- */
 :root {
 	/* Light Mode Colors (Default) */
-	--color-primary: #0A2540; /* Blu Notte Profondo (High Contrast) */
-	--color-surface: #F8FAFC; /* Bianco Calce Freddo (Anti-glare) */
-	--color-surface-container-low: #F1F5F9; /* Sfondo per card, sfondi alternati */
-	--color-surface-container-lowest: #FFFFFF; /* Interno delle card/pannelli */
-	--color-on-surface: #1E293B; /* Antracite per testi lunghi */
-	--color-on-surface-muted: #475569; /* Grigio Ardesia per info secondarie */
-	--color-accent: #C2410C; /* Terracotta Intenso / Ruggine (Vibrant CTA) */
+	--color-primary: #00529B; /* Blu Classico Istituzionale - Titoli e Navigazione */
+	--color-surface: #F4F9FD; /* Azzurro Ghiaccio chiarissimo - Sfondo principale arioso */
+	--color-surface-container-low: #EBF4FB; /* Azzurro pastello - Sfondo sezioni alternate e card hover */
+	--color-surface-container-lowest: #FFFFFF; /* Bianco puro - Interno delle card per massimo contrasto */
+	--color-on-surface: #1E293B; /* Antracite scuro - Testo paragrafi (Accessibile WCAG AAA) */
+	--color-on-surface-muted: #475569; /* Grigio lavagna - Sottotitoli e Metadati */
+	--color-accent: #0284C7; /* Azzurro Brillante - Bottoni, Link attivi e CTA */
 
-	/* Shadows & Layering */
-	--shadow-ambient: 0px 20px 40px rgba(10, 37, 64, 0.04);
-	--shadow-hover: 0px 30px 60px rgba(10, 37, 64, 0.08);
+	/* Shadows & Layering - Ombre più leggere, diffuse e fredde */
+	--shadow-ambient: 0px 10px 30px rgba(0, 82, 155, 0.05);
+	--shadow-hover: 0px 20px 40px rgba(2, 132, 199, 0.15);
 
 	/* Typography */
 	--font-display: 'Noto Serif', serif;
@@ -39,26 +39,26 @@ Text Domain: santagatesi
 	--spacing-lg: 4rem;
 	--spacing-xl: 6rem;
 
-    /* Radii */
-    --radius-md: 12px;
-    --radius-lg: 24px;
-    --radius-xl: 40px;
+    /* Radii - Angoli leggermente più morbidi per un look "pulito" */
+    --radius-md: 16px;
+    --radius-lg: 28px;
+    --radius-xl: 48px;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        /* Dark Mode Colors (Customized Anthracite/Off-White for readability) */
-        --color-primary: #90caf9; /* Lighter blue for dark mode */
-        --color-surface: #121212; /* Very dark gray, not pure black */
-        --color-surface-container-low: #1e1e1e; /* Slightly lighter for layering */
-        --color-surface-container-lowest: #2c2c2c; /* Elevated panels */
-        --color-on-surface: #e0e0e0; /* Off-white for less eye strain */
-        --color-on-surface-muted: #a0a0a0;
-        --color-accent: #64b5f6;
+        /* Dark Mode Colors - Adattata per rimanere "Luminosa" usando blu profondi invece di neri cupi */
+        --color-primary: #BAE6FD; /* Azzurro chiarissimo per i titoli */
+        --color-surface: #0B1E36; /* Blu Abisso - Molto elegante, riposante per gli occhi */
+        --color-surface-container-low: #122B4A; /* Blu Notte per le Card */
+        --color-surface-container-lowest: #1A3A5E; /* Blu per elementi interni in risalto */
+        --color-on-surface: #F8FAFC; /* Bianco freddo per testi lunghi */
+        --color-on-surface-muted: #94A3B8; /* Grigio ardesia per metadati */
+        --color-accent: #38BDF8; /* Azzurro Neon - Molto visibile al buio per le CTA */
 
         /* Shadows adapted for dark mode */
-        --shadow-ambient: 0px 10px 30px rgba(0, 0, 0, 0.5);
-        --shadow-hover: 0px 15px 40px rgba(0, 0, 0, 0.7);
+        --shadow-ambient: 0px 10px 30px rgba(0, 0, 0, 0.4);
+        --shadow-hover: 0px 20px 40px rgba(0, 0, 0, 0.6);
     }
 
     /* Override Tailwind bg-white in dark mode dynamically via CSS */
@@ -243,27 +243,27 @@ p {
 }
 
 .btn-primary {
-	background-color: var(--color-accent); /* Terracotta Intenso per spiccare (CTA principale) */
+	background-color: var(--color-accent); /* Azzurro Brillante per spiccare (CTA principale) */
 	color: #fff;
 	border: none;
 }
 
 .btn-primary:hover {
-	background-color: var(--color-primary); /* Elegante Blu Notte all'hover */
+	background-color: var(--color-primary); /* Blu Classico all'hover */
 	color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(194, 65, 12, 0.3); /* Ombra calda per richiamare la terracotta */
+    box-shadow: 0 10px 20px rgba(2, 132, 199, 0.3); /* Ombra azzurra */
 }
 
 @media (prefers-color-scheme: dark) {
     .btn-primary {
         background-color: var(--color-accent);
-        color: #fff;
+        color: #0B1E36;
     }
     .btn-primary:hover {
-        background-color: var(--color-surface-container-low); /* Contatto morbido per dark mode */
-        color: var(--color-accent);
-        box-shadow: 0 10px 20px rgba(234, 88, 12, 0.2);
+        background-color: var(--color-primary);
+        color: #0B1E36;
+        box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
     }
 }
 
@@ -367,20 +367,20 @@ p {
 
 /* Bottoni speciali per sfondi scuri (Hero) */
 .btn-hero-primary {
-    background-color: var(--color-accent); /* Terracotta vibrante */
+    background-color: var(--color-accent); /* Azzurro vibrante */
     color: #ffffff;
     border: none;
-    box-shadow: 0 10px 30px rgba(194, 65, 12, 0.4); /* Ombra in tinta calda */
+    box-shadow: 0 10px 30px rgba(2, 132, 199, 0.4); /* Ombra in tinta */
 }
 .btn-hero-primary:hover {
-    background-color: #9A3412; /* Sfumatura più scura di terracotta per hover */
+    background-color: var(--color-primary); /* Sfumatura più scura per hover */
     color: #ffffff;
     transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(154, 52, 18, 0.5);
+    box-shadow: 0 15px 40px rgba(0, 82, 155, 0.5);
 }
 
 .btn-hero-secondary {
-    background-color: rgba(10, 37, 64, 0.4); /* Blu Notte semitrasparente */
+    background-color: rgba(0, 82, 155, 0.4); /* Blu semitrasparente */
     color: #ffffff;
     border: 2px solid rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(8px);
@@ -388,7 +388,7 @@ p {
 }
 .btn-hero-secondary:hover {
     background-color: #ffffff;
-    color: var(--color-primary); /* Testo torna Blu Notte solido */
+    color: var(--color-primary); /* Testo torna Blu solido */
     border-color: #ffffff;
     transform: translateY(-3px);
 }
