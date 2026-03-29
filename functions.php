@@ -110,11 +110,9 @@ function santagatesi_guestbook_comment_format( $comment, $args, $depth ) {
 
             <div class="comment-content text-[var(--color-on-surface)] font-body leading-relaxed text-base italic text-gray-800">
                 <?php
-                // Dropcap decoration (UTF-8 safe)
-                $content = get_comment_text();
-                $first_letter = mb_substr($content, 0, 1, 'UTF-8');
-                $rest = mb_substr($content, 1, null, 'UTF-8');
-                echo '<span class="text-2xl font-bold font-display text-[var(--color-accent)] leading-none">' . esc_html($first_letter) . '</span>' . esc_html($rest);
+                // Standard output: get_comment_text() returns formatted HTML (e.g., <p> tags)
+                // We use wp_kses_post to ensure it's safe while preserving basic markup.
+                echo wp_kses_post( get_comment_text() );
                 ?>
             </div><!-- .comment-content -->
 
@@ -143,3 +141,15 @@ function santagatesi_guestbook_comment_format( $comment, $args, $depth ) {
         </article><!-- .comment-body -->
 <?php
 }
+
+/**
+ * Force comments open for the Guestbook template regardless of individual page settings.
+ */
+function santagatesi_force_guestbook_comments_open( $open, $post_id ) {
+    $template = get_page_template_slug( $post_id );
+    if ( 'page-libro-saluti.php' === $template ) {
+        return true;
+    }
+    return $open;
+}
+add_filter( 'comments_open', 'santagatesi_force_guestbook_comments_open', 10, 2 );
