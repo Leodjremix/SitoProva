@@ -7,31 +7,40 @@
 
 get_header();
 
-// Imposta un'immagine di sfondo statica/dinamica per la testata
-$header_bg = get_stylesheet_directory_uri() . '/images/guestbook-bg.jpg';
-$inline_style = "background-image: url('https://www.santagatesinelmondo.it/public/header/logointesta.jpg');";
+// Hero Data from CMS
+$hero_data = get_option('santagatesi_hero_data', array());
+$guestbook_hero = isset($hero_data['guestbook']) ? $hero_data['guestbook'] : array();
+
+$hero_title = !empty($guestbook_hero['title']) ? $guestbook_hero['title'] : "Libro dei Saluti";
+$hero_subtitle = !empty($guestbook_hero['subtitle']) ? $guestbook_hero['subtitle'] : "Unisciti alla nostra community. Lascia un pensiero, un ricordo o un saluto speciale per i tuoi compaesani e la tua amata Sant'Agata.";
+$hero_bg_dynamic  = !empty($guestbook_hero['bg_image']) ? $guestbook_hero['bg_image'] : '';
 ?>
 
 <main id="primary" class="site-main bg-[var(--color-surface)] min-h-screen pb-24">
 
 	<!-- Header Sezione Guestbook -->
-	<section class="relative py-32 mb-16 overflow-hidden bg-gradient-to-br from-[var(--color-surface-container-low)] to-[var(--color-surface-container-lowest)]">
+	<section class="relative py-32 mb-16 overflow-hidden bg-gradient-to-br from-[var(--color-surface-container-low)] to-[var(--color-surface-container-lowest)] <?php echo $hero_bg_dynamic ? 'bg-cover bg-center' : ''; ?>" <?php echo $hero_bg_dynamic ? 'style="background-image: url(\'' . esc_url($hero_bg_dynamic) . '\');"' : ''; ?>>
 
-		<!-- Overlay Decorativo (Luminous Horizon Effect) -->
-		<div class="absolute inset-0 bg-white/40 backdrop-blur-sm z-0"></div>
-
-		<!-- Decorative Circles -->
-		<div class="absolute -top-20 -left-20 w-72 h-72 bg-[var(--color-surface-container-low)] rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-		<div class="absolute top-20 -right-20 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+		<?php if ($hero_bg_dynamic) : ?>
+            <div class="absolute inset-0 bg-white/80 backdrop-blur-md z-0"></div>
+        <?php else : ?>
+            <!-- Overlay Decorativo (Luminous Horizon Effect) -->
+            <div class="absolute inset-0 bg-white/40 backdrop-blur-sm z-0"></div>
+            <!-- Decorative Circles -->
+            <div class="absolute -top-20 -left-20 w-72 h-72 bg-[var(--color-surface-container-low)] rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+            <div class="absolute top-20 -right-20 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+		<?php endif; ?>
 
 		<div class="container relative z-10 text-center px-4">
 			<span class="text-[var(--color-accent)] font-semibold tracking-widest uppercase text-sm mb-6 block font-body">Bacheca Globale</span>
 			<h1 class="text-5xl md:text-7xl font-extrabold text-[var(--color-primary)] mb-8 font-display drop-shadow-sm">
-				Libro dei Saluti
+				<?php echo esc_html( $hero_title ); ?>
 			</h1>
-			<p class="text-xl md:text-2xl text-[var(--color-on-surface-muted)] max-w-3xl mx-auto font-body leading-relaxed">
-				Unisciti alla nostra community. Lascia un pensiero, un ricordo o un saluto speciale per i tuoi compaesani e la tua amata Sant'Agata.
-			</p>
+			<?php if ( $hero_subtitle ) : ?>
+                <p class="text-xl md:text-2xl text-[var(--color-on-surface-muted)] max-w-3xl mx-auto font-body leading-relaxed font-medium">
+                    <?php echo esc_html( $hero_subtitle ); ?>
+                </p>
+            <?php endif; ?>
 		</div>
 	</section>
 

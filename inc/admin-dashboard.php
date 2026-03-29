@@ -80,47 +80,57 @@ function santagatesi_admin_dashboard_callback() {
 
                     <table class="form-table" role="presentation">
                         <tbody>
-                            <!-- Hero testuale -->
-                            <tr style="border-top: 1px solid #ccc;">
-                                <th scope="row"><label for="hero_title"><?php esc_html_e( 'Testo Principale Hero', 'santagatesi' ); ?></label></th>
-                                <td>
-                                    <input type="text" name="hero_title" id="hero_title" value="<?php echo esc_attr( get_option( 'santagatesi_hero_title', 'Santagatesi nel Mondo' ) ); ?>" class="regular-text" style="width: 100%; max-width: 600px;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row"><label for="hero_subtitle"><?php esc_html_e( 'Sottotitolo Hero', 'santagatesi' ); ?></label></th>
-                                <td>
-                                    <textarea name="hero_subtitle" id="hero_subtitle" rows="2" style="width: 100%; max-width: 600px;"><?php echo esc_textarea( get_option( 'santagatesi_hero_subtitle', 'Un ponte tra le nostre radici e il futuro, ovunque tu sia.' ) ); ?></textarea>
-                                </td>
-                            </tr>
+                            <?php
+                            // Definizione delle Pagine/Sezioni configurabili dinamicamente
+                            $hero_sections = array(
+                                'home' => 'Home Page (Testata Principale)',
+                                'eventi' => 'Pagina Eventi',
+                                'video' => 'Pagina Video',
+                                'link' => 'Attività e Link Utili',
+                                'illustri' => 'Santagatesi Illustri',
+                                'guestbook' => 'Libro dei Saluti',
+                                'gallery' => 'Galleria Media'
+                            );
 
-                            <!-- Hero Image via Media Uploader -->
-                            <tr style="border-top: 1px solid #eee;">
-                                <th scope="row"><label for="img_hero"><?php esc_html_e( 'Immagine Sfondo Hero', 'santagatesi' ); ?></label></th>
+                            // Recupera i dati salvati (array serializzato)
+                            $hero_data = get_option( 'santagatesi_hero_data', array() );
+
+                            foreach ( $hero_sections as $id => $label ) :
+                                // Valori di default
+                                $title = isset($hero_data[$id]['title']) ? $hero_data[$id]['title'] : '';
+                                $subtitle = isset($hero_data[$id]['subtitle']) ? $hero_data[$id]['subtitle'] : '';
+                                $bg_img = isset($hero_data[$id]['bg_image']) ? $hero_data[$id]['bg_image'] : '';
+                            ?>
+                            <tr style="border-top: 2px solid #2271b1; background-color: #f6f7f7;">
+                                <td colspan="2" style="padding: 15px 10px;">
+                                    <h3 style="margin: 0; color: #1d2327;"><span class="dashicons dashicons-admin-page" style="vertical-align: middle; margin-right: 5px;"></span><?php echo esc_html( $label ); ?></h3>
+                                </td>
+                            </tr>
+                            <tr style="background-color: #fafafa;">
+                                <th scope="row"><label for="hero_title_<?php echo esc_attr($id); ?>"><?php esc_html_e( 'Titolo', 'santagatesi' ); ?></label></th>
                                 <td>
-                                    <input type="text" name="img_hero" id="img_hero" value="<?php echo esc_attr( $section_images['hero'] ); ?>" class="regular-text" style="width: 100%; max-width: 500px;">
-                                    <input type="button" class="button button-secondary stg-upload-btn" data-target="img_hero" value="<?php esc_attr_e( 'Scegli Immagine', 'santagatesi' ); ?>">
-                                    <?php if( $section_images['hero'] ): ?>
-                                        <div style="margin-top:10px; max-width: 300px; border: 1px solid #ccc; border-radius: 4px; overflow:hidden;">
-                                            <img src="<?php echo esc_url( $section_images['hero'] ); ?>" alt="Anteprima Hero" style="width: 100%; height: auto; display: block;" id="img_hero_preview">
+                                    <input type="text" name="hero_data[<?php echo esc_attr($id); ?>][title]" id="hero_title_<?php echo esc_attr($id); ?>" value="<?php echo esc_attr( $title ); ?>" class="regular-text" style="width: 100%; max-width: 600px;" placeholder="Titolo della sezione">
+                                </td>
+                            </tr>
+                            <tr style="background-color: #fafafa;">
+                                <th scope="row"><label for="hero_subtitle_<?php echo esc_attr($id); ?>"><?php esc_html_e( 'Sottotitolo', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <textarea name="hero_data[<?php echo esc_attr($id); ?>][subtitle]" id="hero_subtitle_<?php echo esc_attr($id); ?>" rows="2" style="width: 100%; max-width: 600px;" placeholder="Sottotitolo o breve descrizione..."><?php echo esc_textarea( $subtitle ); ?></textarea>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ccc; background-color: #fafafa;">
+                                <th scope="row"><label for="hero_bg_<?php echo esc_attr($id); ?>"><?php esc_html_e( 'Immagine Sfondo', 'santagatesi' ); ?></label></th>
+                                <td style="padding-bottom: 20px;">
+                                    <input type="text" name="hero_data[<?php echo esc_attr($id); ?>][bg_image]" id="hero_bg_<?php echo esc_attr($id); ?>" value="<?php echo esc_attr( $bg_img ); ?>" class="regular-text" style="width: 100%; max-width: 400px;" placeholder="URL immagine (carica dalla libreria media)">
+                                    <input type="button" class="button button-secondary stg-upload-btn" data-target="hero_bg_<?php echo esc_attr($id); ?>" value="<?php esc_attr_e( 'Scegli Immagine', 'santagatesi' ); ?>">
+                                    <?php if( $bg_img ): ?>
+                                        <div style="margin-top:10px; max-width: 250px; border: 1px solid #ddd; border-radius: 4px; overflow:hidden;">
+                                            <img src="<?php echo esc_url( $bg_img ); ?>" alt="Anteprima Sfondo" style="width: 100%; height: auto; display: block;" id="hero_bg_<?php echo esc_attr($id); ?>_preview">
                                         </div>
                                     <?php endif; ?>
                                 </td>
                             </tr>
-
-                            <!-- Chi Siamo Image via Media Uploader -->
-                            <tr style="border-top: 1px solid #eee;">
-                                <th scope="row"><label for="img_chisiamo"><?php esc_html_e( 'Immagine Intestazione "Chi Siamo"', 'santagatesi' ); ?></label></th>
-                                <td>
-                                    <input type="text" name="img_chisiamo" id="img_chisiamo" value="<?php echo esc_attr( $section_images['chi_siamo'] ); ?>" class="regular-text" style="width: 100%; max-width: 500px;">
-                                    <input type="button" class="button button-secondary stg-upload-btn" data-target="img_chisiamo" value="<?php esc_attr_e( 'Scegli Immagine', 'santagatesi' ); ?>">
-                                    <?php if( $section_images['chi_siamo'] ): ?>
-                                        <div style="margin-top:10px; max-width: 300px; border: 1px solid #ccc; border-radius: 4px; overflow:hidden;">
-                                            <img src="<?php echo esc_url( $section_images['chi_siamo'] ); ?>" alt="Anteprima Chi Siamo" style="width: 100%; height: auto; display: block;" id="img_chisiamo_preview">
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
 
@@ -324,31 +334,44 @@ function santagatesi_process_admin_dashboard_forms() {
     // 2. Logica di salvataggio basata sull'azione
     if ( 'save_section_images' === $action && isset( $_POST['submit_images'] ) ) {
 
-        $hero_title = isset( $_POST['hero_title'] ) ? sanitize_text_field( wp_unslash( $_POST['hero_title'] ) ) : '';
-        $hero_subtitle = isset( $_POST['hero_subtitle'] ) ? sanitize_textarea_field( wp_unslash( $_POST['hero_subtitle'] ) ) : '';
-        $img_hero = isset( $_POST['img_hero'] ) ? esc_url_raw( wp_unslash( $_POST['img_hero'] ) ) : '';
-        $img_chisiamo = isset( $_POST['img_chisiamo'] ) ? esc_url_raw( wp_unslash( $_POST['img_chisiamo'] ) ) : '';
+        if ( isset( $_POST['hero_data'] ) && is_array( $_POST['hero_data'] ) ) {
+            $sanitized_data = array();
 
-        update_option( 'santagatesi_hero_title', $hero_title );
-        update_option( 'santagatesi_hero_subtitle', $hero_subtitle );
-        update_option( 'santagatesi_hero_image_url', $img_hero );
-        update_option( 'santagatesi_img_chisiamo', $img_chisiamo );
+            foreach ( $_POST['hero_data'] as $key => $data ) {
+                $sanitized_data[$key] = array(
+                    'title'    => isset( $data['title'] ) ? sanitize_text_field( wp_unslash( $data['title'] ) ) : '',
+                    'subtitle' => isset( $data['subtitle'] ) ? sanitize_textarea_field( wp_unslash( $data['subtitle'] ) ) : '',
+                    'bg_image' => isset( $data['bg_image'] ) ? esc_url_raw( wp_unslash( $data['bg_image'] ) ) : '',
+                );
+            }
 
-        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Immagini e Testi aggiornati con successo!', 'santagatesi' ) . '</p></div>';
+            update_option( 'santagatesi_hero_data', $sanitized_data );
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Testi e Immagini delle Hero salvati con successo!', 'santagatesi' ) . '</p></div>';
+        }
     }
     elseif ( 'save_webcams' === $action && isset( $_POST['submit_webcams'] ) ) {
 
-        $webcam_1_url = isset( $_POST['webcam_1_url'] ) ? esc_url_raw( wp_unslash( $_POST['webcam_1_url'] ) ) : '';
-        $webcam_2_url = isset( $_POST['webcam_2_url'] ) ? esc_url_raw( wp_unslash( $_POST['webcam_2_url'] ) ) : '';
-        $webcam_1_visible = isset( $_POST['webcam_1_visible'] ) ? '1' : '0';
-        $webcam_2_visible = isset( $_POST['webcam_2_visible'] ) ? '1' : '0';
+        if ( isset( $_POST['santagatesi_webcams'] ) && is_array( $_POST['santagatesi_webcams'] ) ) {
+            $sanitized_webcams = array();
 
-        update_option( 'santagatesi_webcam_1_url', $webcam_1_url );
-        update_option( 'santagatesi_webcam_2_url', $webcam_2_url );
-        update_option( 'santagatesi_webcam_1_visible', $webcam_1_visible );
-        update_option( 'santagatesi_webcam_2_visible', $webcam_2_visible );
+            // Re-index array explicitly (0, 1, 2...)
+            $index = 0;
+            foreach ( $_POST['santagatesi_webcams'] as $cam ) {
+                if ( empty($cam['url']) && empty($cam['nome']) ) {
+                    continue; // Skip completely empty rows
+                }
+                $sanitized_webcams[$index] = array(
+                    'nome'      => isset($cam['nome']) ? sanitize_text_field( wp_unslash($cam['nome']) ) : '',
+                    'url'       => isset($cam['url']) ? esc_url_raw( wp_unslash($cam['url']) ) : '',
+                    'anteprima' => isset($cam['anteprima']) ? esc_url_raw( wp_unslash($cam['anteprima']) ) : '',
+                    'visibile'  => isset($cam['visibile']) ? '1' : '0',
+                );
+                $index++;
+            }
 
-        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Webcam aggiornate con successo!', 'santagatesi' ) . '</p></div>';
+            update_option( 'santagatesi_webcam_data', $sanitized_webcams );
+            echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Webcam salvate e riordinate con successo!', 'santagatesi' ) . '</p></div>';
+        }
     }
     elseif ( 'save_content_visibility' === $action && isset( $_POST['submit_visibility'] ) ) {
 

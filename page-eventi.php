@@ -67,17 +67,55 @@ if ( $eventi_query->have_posts() ) {
 }
 ?>
 
+<?php
+$hero_data = get_option('santagatesi_hero_data', array());
+$eventi_hero = isset($hero_data['eventi']) ? $hero_data['eventi'] : array();
+$hero_title = !empty($eventi_hero['title']) ? $eventi_hero['title'] : "Calendario Eventi";
+$hero_subtitle = !empty($eventi_hero['subtitle']) ? $eventi_hero['subtitle'] : "Non perderti i prossimi appuntamenti a Sant'Agata di Puglia.";
+$hero_bg = !empty($eventi_hero['bg_image']) ? $eventi_hero['bg_image'] : '';
+?>
+
 <main id="primary" class="site-main bg-[var(--color-surface)]">
+
+	<?php if ( $hero_bg ) : ?>
+		<!-- Cinematic Hero Section per Eventi -->
+		<section class="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+			<!-- Immagine di Sfondo Parallax-like -->
+			<div class="absolute inset-0 z-0">
+				<img src="<?php echo esc_url($hero_bg); ?>" alt="<?php echo esc_attr($hero_title); ?>" class="w-full h-full object-cover object-center scale-105 transform transition-transform duration-10000" style="filter: brightness(0.6);" />
+			</div>
+
+			<!-- Overlay Sfumato -->
+			<div class="absolute inset-0 z-10 bg-gradient-to-t from-[var(--color-surface)] via-transparent to-black/40"></div>
+
+			<!-- Contenuto Hero -->
+			<div class="container relative z-20 text-center px-4">
+				<div class="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl">
+					<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white drop-shadow-md"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+				</div>
+				<h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 drop-shadow-xl font-display tracking-tight leading-tight">
+					<?php echo esc_html($hero_title); ?>
+				</h1>
+				<?php if ( $hero_subtitle ) : ?>
+					<p class="text-xl md:text-2xl text-white/90 font-body max-w-3xl mx-auto drop-shadow-md font-light leading-relaxed">
+						<?php echo esc_html($hero_subtitle); ?>
+					</p>
+				<?php endif; ?>
+			</div>
+		</section>
+	<?php endif; ?>
 
 	<section class="section py-24">
 		<div class="container">
+			<?php if ( ! $hero_bg ) : ?>
 			<header class="text-center mb-20">
 				<h1 class="text-5xl md:text-6xl font-bold mb-6 flex items-center justify-center gap-4 text-[var(--color-primary)] font-display">
 					<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--color-accent)]"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-					Calendario Eventi
+					<?php echo esc_html($hero_title); ?>
 				</h1>
-				<p class="text-xl text-[var(--color-on-surface-muted)] font-body">Non perderti i prossimi appuntamenti a Sant'Agata di Puglia.</p>
+				<p class="text-xl text-[var(--color-on-surface-muted)] font-body"><?php echo esc_html($hero_subtitle); ?></p>
 			</header>
+			<?php endif; ?>
 
 			<div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
 

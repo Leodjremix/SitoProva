@@ -10,12 +10,15 @@
 
 get_header();
 
-// Setup Intestazione Dinamica (Se non ne hai una specifica per questa pagina, uso fallback)
+// Hero Data from CMS
+$hero_data = get_option('santagatesi_hero_data', array());
+$link_hero = isset($hero_data['link']) ? $hero_data['link'] : array();
+
+$hero_title = !empty($link_hero['title']) ? $link_hero['title'] : "Attività e Link Utili";
+$hero_subtitle = !empty($link_hero['subtitle']) ? $link_hero['subtitle'] : "Scopri i servizi, le strutture ricettive e le attività consigliate a Sant'Agata di Puglia.";
 $hero_bg_fallback = get_stylesheet_directory_uri() . '/images/links-bg.jpg';
-$hero_bg_dynamic  = get_option( 'santagatesi_img_chisiamo', $hero_bg_fallback ); // Fallback su un'immagine esistente
-if ( empty( $hero_bg_dynamic ) ) {
-    $hero_bg_dynamic = $hero_bg_fallback;
-}
+$hero_bg_dynamic  = !empty($link_hero['bg_image']) ? $link_hero['bg_image'] : $hero_bg_fallback;
+
 $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 ?>
 
@@ -25,9 +28,11 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 	<section class="hero-section relative h-[35vh] min-h-[300px] flex items-center justify-center bg-cover bg-center" style="<?php echo esc_attr( $inline_style ); ?>">
         <div class="absolute inset-0 bg-black/60 z-0"></div> <!-- Overlay scuro -->
 		<div class="container relative z-10 text-center">
-			<div class="tonal-panel mx-auto max-w-3xl bg-[var(--color-surface-container-lowest)]/95 backdrop-blur-md p-6 rounded-2xl shadow-lg">
-				<h1 class="text-3xl md:text-5xl font-bold mb-3 text-[var(--color-primary)] font-display">Attività e Link Utili</h1>
-				<p class="text-lg text-[var(--color-on-surface-muted)] font-body">Scopri i servizi, le strutture ricettive e le attività consigliate a Sant'Agata di Puglia.</p>
+			<div class="tonal-panel mx-auto max-w-3xl bg-[var(--color-surface-container-lowest)]/95 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-[var(--color-surface-container-low)]">
+				<h1 class="text-3xl md:text-5xl font-bold mb-3 text-[var(--color-primary)] font-display"><?php echo esc_html( $hero_title ); ?></h1>
+				<?php if ( $hero_subtitle ) : ?>
+                    <p class="text-lg text-[var(--color-on-surface-muted)] font-body"><?php echo esc_html( $hero_subtitle ); ?></p>
+                <?php endif; ?>
 			</div>
 		</div>
 	</section>

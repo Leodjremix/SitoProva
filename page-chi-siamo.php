@@ -7,14 +7,14 @@
 
 get_header();
 
-// Setup a fallback image using the requested dynamic path method
-$hero_bg_fallback = 'https://www.santagatesinelmondo.it/public/header/fratelli%20emigranti.jpg';
-$hero_bg_dynamic  = get_option( 'santagatesi_img_chisiamo', $hero_bg_fallback );
+// Hero Data from CMS
+$hero_data = get_option('santagatesi_hero_data', array());
+$chisiamo_hero = isset($hero_data['chi_siamo']) ? $hero_data['chi_siamo'] : array();
 
-// If the dynamic option exists but is somehow empty, fallback
-if ( empty( $hero_bg_dynamic ) ) {
-    $hero_bg_dynamic = $hero_bg_fallback;
-}
+$hero_title = !empty($chisiamo_hero['title']) ? $chisiamo_hero['title'] : "Chi Siamo";
+$hero_subtitle = !empty($chisiamo_hero['subtitle']) ? $chisiamo_hero['subtitle'] : "Associazione di Promozione Sociale - Un ponte vitale tra la nostra amata Sant'Agata di Puglia e i Santagatesi sparsi per il mondo.";
+$hero_bg_fallback = 'https://www.santagatesinelmondo.it/public/header/fratelli%20emigranti.jpg';
+$hero_bg_dynamic  = !empty($chisiamo_hero['bg_image']) ? $chisiamo_hero['bg_image'] : $hero_bg_fallback;
 
 $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 ?>
@@ -25,8 +25,10 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 	<section class="hero-section" style="<?php echo esc_attr( $inline_style ); ?>">
 		<div class="container relative z-10 py-24 flex justify-center">
 			<div class="tonal-panel mx-auto max-w-4xl text-center bg-white/90 backdrop-blur-md">
-				<h1 class="text-4xl md:text-6xl font-bold mb-6 text-[var(--color-primary)] font-display">Chi Siamo</h1>
-				<p class="text-xl text-[var(--color-on-surface-muted)] font-body leading-relaxed max-w-2xl mx-auto">Associazione di Promozione Sociale - Un ponte vitale tra la nostra amata Sant'Agata di Puglia e i Santagatesi sparsi per il mondo.</p>
+				<h1 class="text-4xl md:text-6xl font-bold mb-6 text-[var(--color-primary)] font-display"><?php echo esc_html( $hero_title ); ?></h1>
+				<?php if ( $hero_subtitle ) : ?>
+                    <p class="text-xl text-[var(--color-on-surface-muted)] font-body leading-relaxed max-w-2xl mx-auto"><?php echo esc_html( $hero_subtitle ); ?></p>
+                <?php endif; ?>
 			</div>
 		</div>
 	</section>

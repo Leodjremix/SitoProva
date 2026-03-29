@@ -14,8 +14,12 @@ $channel_id = 'nardino1000'; // Target YouTube Channel (Using Username logic fro
 // Fetch Videos using existing logic in functions.php that parses the RSS Feed since API key is empty
 $videos = santagatesi_get_latest_youtube_videos( 12 );
 
-// Header background
-$inline_style = "background-image: url('" . get_stylesheet_directory_uri() . "/images/video-bg.jpg');";
+// Hero Data from CMS
+$hero_data = get_option('santagatesi_hero_data', array());
+$video_hero = isset($hero_data['video']) ? $hero_data['video'] : array();
+$hero_title = !empty($video_hero['title']) ? $video_hero['title'] : "Artemisium Web-TV";
+$hero_subtitle = !empty($video_hero['subtitle']) ? $video_hero['subtitle'] : "Archivio video e dirette dal canale ufficiale YouTube. Vivi le emozioni, le processioni e gli eventi di Sant'Agata ovunque tu sia.";
+$hero_bg = !empty($video_hero['bg_image']) ? $video_hero['bg_image'] : get_stylesheet_directory_uri() . '/images/video-bg.jpg';
 ?>
 
 <main id="primary" class="site-main bg-[var(--color-surface)]">
@@ -24,7 +28,7 @@ $inline_style = "background-image: url('" . get_stylesheet_directory_uri() . "/i
 	<section class="relative min-h-[70vh] flex items-center overflow-hidden bg-[#0a0a0a]">
 		<!-- Cinematic Blurred Background -->
 		<div class="absolute inset-0 z-0">
-			<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/images/video-bg.jpg' ); ?>" alt="Background" class="w-full h-full object-cover opacity-40 scale-105 filter blur-sm">
+			<img src="<?php echo esc_url( $hero_bg ); ?>" alt="Background" class="w-full h-full object-cover opacity-40 scale-105 filter blur-sm">
 			<div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
 			<div class="absolute inset-0 bg-gradient-to-t from-[var(--color-surface)] to-transparent opacity-90"></div>
 		</div>
@@ -45,12 +49,20 @@ $inline_style = "background-image: url('" . get_stylesheet_directory_uri() . "/i
 				</div>
 
 				<h1 class="text-5xl md:text-7xl font-extrabold text-white leading-tight font-display drop-shadow-lg">
-					Artemisium <br>
-					<span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400">Web-TV</span>
+					<?php
+                    // Split title to style the last word differently if possible, or just print it.
+                    $title_words = explode(' ', $hero_title);
+                    if (count($title_words) > 1) {
+                        $last_word = array_pop($title_words);
+                        echo esc_html(implode(' ', $title_words)) . ' <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400">' . esc_html($last_word) . '</span>';
+                    } else {
+                        echo esc_html($hero_title);
+                    }
+                    ?>
 				</h1>
 
 				<p class="text-xl md:text-2xl text-gray-300 font-body leading-relaxed max-w-2xl border-l-4 border-red-500 pl-6">
-					Archivio video e dirette dal canale ufficiale YouTube. Vivi le emozioni, le processioni e gli eventi di Sant'Agata ovunque tu sia.
+					<?php echo esc_html($hero_subtitle); ?>
 				</p>
 
 				<div class="flex items-center gap-6 pt-6">

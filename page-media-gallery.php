@@ -23,22 +23,29 @@ $args = array(
 );
 $media_query = new WP_Query( $args );
 
-// Determine header background
-$header_bg = get_stylesheet_directory_uri() . '/images/gallery-bg.jpg';
-$inline_style = "background-image: url('" . esc_url( $header_bg ) . "');";
+// Hero Data from CMS
+$hero_data = get_option('santagatesi_hero_data', array());
+$gallery_hero = isset($hero_data['gallery']) ? $hero_data['gallery'] : array();
+
+$hero_title = !empty($gallery_hero['title']) ? $gallery_hero['title'] : "Galleria Media";
+$hero_subtitle = !empty($gallery_hero['subtitle']) ? $gallery_hero['subtitle'] : "Una raccolta di momenti indimenticabili. Sfoglia le foto e i video della nostra amata Sant'Agata.";
+$hero_bg_dynamic  = !empty($gallery_hero['bg_image']) ? $gallery_hero['bg_image'] : '';
 ?>
 
 <main id="primary" class="site-main bg-[var(--color-surface)] min-h-screen pb-24">
 
 	<!-- Modern Hero Section -->
-	<section class="relative py-32 mb-16 overflow-hidden bg-gradient-to-br from-[var(--color-surface-container-low)] to-[var(--color-surface-container-lowest)]">
+	<section class="relative py-32 mb-16 overflow-hidden bg-gradient-to-br from-[var(--color-surface-container-low)] to-[var(--color-surface-container-lowest)] <?php echo $hero_bg_dynamic ? 'bg-cover bg-center' : ''; ?>" <?php echo $hero_bg_dynamic ? 'style="background-image: url(\'' . esc_url($hero_bg_dynamic) . '\');"' : ''; ?>>
 
-		<!-- Overlay Decorativo (Luminous Horizon Effect) -->
-		<div class="absolute inset-0 bg-white/40 backdrop-blur-sm z-0"></div>
-
-		<!-- Decorative Elements -->
-		<div class="absolute -top-20 -left-20 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-		<div class="absolute top-20 -right-20 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+		<?php if ($hero_bg_dynamic) : ?>
+            <div class="absolute inset-0 bg-white/80 backdrop-blur-md z-0"></div>
+        <?php else : ?>
+            <!-- Overlay Decorativo (Luminous Horizon Effect) -->
+            <div class="absolute inset-0 bg-white/40 backdrop-blur-sm z-0"></div>
+            <!-- Decorative Elements -->
+            <div class="absolute -top-20 -left-20 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+            <div class="absolute top-20 -right-20 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+		<?php endif; ?>
 
 		<div class="container relative z-10 text-center px-4">
 			<span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-[var(--color-accent)] font-semibold tracking-widest uppercase text-xs mb-6 font-body shadow-sm">
@@ -46,11 +53,13 @@ $inline_style = "background-image: url('" . esc_url( $header_bg ) . "');";
 				Esplora i Ricordi
 			</span>
 			<h1 class="text-5xl md:text-7xl font-extrabold text-[var(--color-primary)] mb-8 font-display drop-shadow-sm">
-				Galleria Media
+				<?php echo esc_html( $hero_title ); ?>
 			</h1>
-			<p class="text-xl md:text-2xl text-[var(--color-on-surface-muted)] max-w-3xl mx-auto font-body leading-relaxed">
-				Una raccolta di momenti indimenticabili. Sfoglia le foto e i video della nostra amata Sant'Agata.
-			</p>
+			<?php if ( $hero_subtitle ) : ?>
+                <p class="text-xl md:text-2xl text-[var(--color-on-surface-muted)] max-w-3xl mx-auto font-body leading-relaxed">
+                    <?php echo esc_html( $hero_subtitle ); ?>
+                </p>
+            <?php endif; ?>
 
             <!-- Filters (JS Driven) -->
             <div class="mt-12 flex flex-wrap justify-center gap-4 filter-container">

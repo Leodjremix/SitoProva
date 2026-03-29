@@ -10,12 +10,15 @@
 
 get_header();
 
-// Intestazione Dinamica
+// Hero Data from CMS
+$hero_data = get_option('santagatesi_hero_data', array());
+$illustri_hero = isset($hero_data['illustri']) ? $hero_data['illustri'] : array();
+
+$hero_title = !empty($illustri_hero['title']) ? $illustri_hero['title'] : "Santagatesi Illustri";
+$hero_subtitle = !empty($illustri_hero['subtitle']) ? $illustri_hero['subtitle'] : "Donne e uomini di talento che hanno portato alto il nome di Sant'Agata di Puglia nel mondo, distinguendosi per le loro opere e il loro ingegno.";
 $hero_bg_fallback = get_stylesheet_directory_uri() . '/images/illustri-bg.jpg';
-$hero_bg_dynamic  = get_option( 'santagatesi_img_storia', $hero_bg_fallback ); // Reuse the "Storia" image for the Illustri archive
-if ( empty( $hero_bg_dynamic ) ) {
-    $hero_bg_dynamic = $hero_bg_fallback;
-}
+$hero_bg_dynamic  = !empty($illustri_hero['bg_image']) ? $illustri_hero['bg_image'] : $hero_bg_fallback;
+
 $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 ?>
 
@@ -26,8 +29,10 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
         <div class="absolute inset-0 bg-black/50 z-0"></div> <!-- Overlay scuro per leggibilità -->
 		<div class="container relative z-10 text-center">
 			<div class="tonal-panel mx-auto max-w-4xl bg-[var(--color-surface-container-lowest)]/95 backdrop-blur-md p-8 rounded-2xl shadow-[var(--shadow-ambient)]">
-				<h1 class="text-4xl md:text-5xl font-bold mb-4 text-[var(--color-primary)] font-display">Santagatesi Illustri</h1>
-				<p class="text-lg text-[var(--color-on-surface-muted)] font-body max-w-2xl mx-auto">Donne e uomini di talento che hanno portato alto il nome di Sant'Agata di Puglia nel mondo, distinguendosi per le loro opere e il loro ingegno.</p>
+				<h1 class="text-4xl md:text-5xl font-bold mb-4 text-[var(--color-primary)] font-display"><?php echo esc_html( $hero_title ); ?></h1>
+				<?php if ( $hero_subtitle ) : ?>
+                    <p class="text-lg text-[var(--color-on-surface-muted)] font-body max-w-2xl mx-auto"><?php echo esc_html( $hero_subtitle ); ?></p>
+                <?php endif; ?>
 			</div>
 		</div>
 	</section>

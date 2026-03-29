@@ -5,15 +5,15 @@
  * @package santagatesi
  */
 
-// Recupera l'URL dinamicamente dalle opzioni salvate tramite il modulo Admin Frontend
-$hero_bg_url = get_option( 'santagatesi_hero_image_url', 'https://www.santagatesinelmondo.it/public/banner/cripta.jpg' );
-$inline_style = "background-image: url('" . esc_url($hero_bg_url) . "');";
-?>
+// Hero Data from CMS
+$hero_data = get_option('santagatesi_hero_data', array());
+$home_hero = isset($hero_data['home']) ? $hero_data['home'] : array();
 
-<?php
-// Retrieve dynamic text from the new admin dashboard settings
-$hero_title = get_option( 'santagatesi_hero_title', 'Santagatesi nel Mondo' );
-$hero_subtitle = get_option( 'santagatesi_hero_subtitle', 'Un ponte tra le nostre radici e il futuro, ovunque tu sia.' );
+$hero_title = !empty($home_hero['title']) ? $home_hero['title'] : "Santagatesi nel Mondo";
+$hero_subtitle = !empty($home_hero['subtitle']) ? $home_hero['subtitle'] : "Un ponte tra le nostre radici e il futuro, ovunque tu sia.";
+$hero_bg_url = !empty($home_hero['bg_image']) ? $home_hero['bg_image'] : 'https://www.santagatesinelmondo.it/public/banner/cripta.jpg';
+
+$inline_style = "background-image: url('" . esc_url($hero_bg_url) . "');";
 ?>
 <section class="hero-section" style="<?php echo esc_attr( $inline_style ); ?>">
 	<div class="container relative z-10 flex justify-center">
