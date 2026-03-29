@@ -7,21 +7,50 @@
 
 get_header();
 
-// Extract upcoming events using WP_Query for custom post type 'santagatesi_evento'
+// Generate a lightweight CSS calendar with pagination logic
+$req_month = isset($_GET['mo']) ? (int) $_GET['mo'] : (int) date('m');
+$req_year  = isset($_GET['yr']) ? (int) $_GET['yr'] : (int) date('Y');
+
+// Security check limits
+if ($req_month < 1 || $req_month > 12) { $req_month = (int) date('m'); }
+if ($req_year < 2000 || $req_year > 2100) { $req_year = (int) date('Y'); }
+
+// Current viewing date strings
+$viewing_date = $req_year . '-' . sprintf('%02d', $req_month) . '-01';
+$last_day_of_month = date('t', strtotime($viewing_date));
+$end_viewing_date = $req_year . '-' . sprintf('%02d', $req_month) . '-' . $last_day_of_month;
+
+$current_month_name = date_i18n('F', strtotime($viewing_date));
+$days_in_month = (int) $last_day_of_month;
+$first_day = date('w', strtotime($viewing_date));
+
+// Extract events for the currently requested month using WP_Query
 $args = array(
 	'post_type'      => 'santagatesi_evento',
-	'posts_per_page' => 15,
-    'meta_key'       => '_event_date',
+	'posts_per_page' => -1, // Get all events for the current month view
 	'orderby'        => 'meta_value',
-	'order'          => 'ASC'
+	'order'          => 'ASC',
+	'meta_query'     => array(
+		array(
+			'key'     => '_event_date',
+			'value'   => array( $viewing_date, $end_viewing_date ),
+			'compare' => 'BETWEEN',
+			'type'    => 'DATE',
+		),
+	),
 );
 $eventi_query = new WP_Query( $args );
 
-// Generate a static lightweight CSS calendar for UI purposes
-$current_month = date_i18n('F');
-$current_year = date('Y');
-$days_in_month = cal_days_in_month(CAL_GREGORIAN, date('m'), date('Y'));
-$first_day = date('w', strtotime(date('Y-m-01')));
+// Calculate prev/next dates for pagination
+$prev_month = $req_month - 1;
+$prev_year  = $req_year;
+if ($prev_month < 1) { $prev_month = 12; $prev_year--; }
+
+$next_month = $req_month + 1;
+$next_year  = $req_year;
+if ($next_month > 12) { $next_month = 1; $next_year++; }
+
+$base_url = get_permalink();
 
 // Array per marcare i giorni con eventi sul calendario
 $days_with_events = array();
@@ -29,7 +58,7 @@ if ( $eventi_query->have_posts() ) {
     while ( $eventi_query->have_posts() ) {
         $eventi_query->the_post();
         $date_meta = get_post_meta( get_the_ID(), '_event_date', true );
-        if ( !empty($date_meta) && date('Y-m', strtotime($date_meta)) === date('Y-m') ) {
+        if ( !empty($date_meta) && date('Y-m', strtotime($date_meta)) === date('Y-m', strtotime($viewing_date)) ) {
             $days_with_events[] = date('j', strtotime($date_meta));
         }
     }
@@ -55,9 +84,9 @@ if ( $eventi_query->have_posts() ) {
 				<!-- CSS UI Calendar Sidebar -->
 				<div class="lg:col-span-1 tonal-panel p-8 sticky top-32 bg-white">
 					<div class="flex justify-between items-center mb-8 text-[var(--color-primary)] font-bold text-xl border-b border-[var(--color-surface-container-low)] pb-4 font-display">
-						<button class="hover:text-[var(--color-accent)] transition-colors w-8 h-8 rounded-full hover:bg-[var(--color-surface)] flex items-center justify-center">&larr;</button>
-						<span class="capitalize"><?php echo $current_month . ' ' . $current_year; ?></span>
-						<button class="hover:text-[var(--color-accent)] transition-colors w-8 h-8 rounded-full hover:bg-[var(--color-surface)] flex items-center justify-center">&rarr;</button>
+						<a href="<?php echo esc_url( add_query_arg( array( 'mo' => $prev_month, 'yr' => $prev_year ), $base_url ) ); ?>" class="hover:text-[var(--color-accent)] transition-colors w-8 h-8 rounded-full hover:bg-[var(--color-surface)] flex items-center justify-center" aria-label="Mese Precedente">&larr;</a>
+						<span class="capitalize"><?php echo esc_html( $current_month_name . ' ' . $req_year ); ?></span>
+						<a href="<?php echo esc_url( add_query_arg( array( 'mo' => $next_month, 'yr' => $next_year ), $base_url ) ); ?>" class="hover:text-[var(--color-accent)] transition-colors w-8 h-8 rounded-full hover:bg-[var(--color-surface)] flex items-center justify-center" aria-label="Mese Successivo">&rarr;</a>
 					</div>
 
 					<div class="grid grid-cols-7 gap-2 text-center text-sm font-semibold text-[var(--color-on-surface-muted)] mb-4 font-body uppercase tracking-wider">
@@ -70,8 +99,12 @@ if ( $eventi_query->have_posts() ) {
 						for ($i = 0; $i < $first_day; $i++) { echo '<div class="p-2 opacity-30 text-gray-400">-</div>'; }
 
 						// Actual days
+						$today_day = (int) date('j');
+						$today_mo  = (int) date('m');
+						$today_yr  = (int) date('Y');
+
 						for ($day = 1; $day <= $days_in_month; $day++) {
-							$is_today = ($day == date('j')) ? 'ring-2 ring-[var(--color-primary)]' : '';
+							$is_today = ($day === $today_day && $req_month === $today_mo && $req_year === $today_yr) ? 'ring-2 ring-[var(--color-primary)]' : '';
 
                             // Highlight event days
                             $has_event_class = in_array($day, $days_with_events) ? 'bg-[var(--color-primary)] text-white shadow-md font-bold' : 'hover:bg-[var(--color-surface-container-low)] font-medium text-[var(--color-on-surface-muted)]';
