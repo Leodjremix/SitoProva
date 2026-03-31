@@ -16,15 +16,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Register the Admin Page under the main Settings/Dashboard menu
  */
 function santagatesi_register_custom_admin_page() {
+    // 1. Add the main top-level menu
     $hook = add_menu_page(
         __( 'Gestione Sito Santagatesi', 'santagatesi' ),
         __( 'Gestione Sito', 'santagatesi' ),
         'administrator', // Strict capability check
         'santagatesi-admin-dashboard',
-        'santagatesi_admin_dashboard_callback',
+        'santagatesi_admin_dashboard_callback', // This callback gets overridden if CPTs are added to this menu
         'dashicons-admin-generic',
         3
     );
+
+    // 2. Explicitly add the dashboard itself as the FIRST submenu item.
+    // This ensures that clicking the top-level "Gestione Sito" goes to our custom dashboard
+    // rather than the first Custom Post Type list that attached itself to this menu.
+    add_submenu_page(
+        'santagatesi-admin-dashboard',
+        __( 'Pannello di Controllo', 'santagatesi' ),
+        __( 'Pannello', 'santagatesi' ),
+        'administrator',
+        'santagatesi-admin-dashboard', // Same slug as parent
+        'santagatesi_admin_dashboard_callback'
+    );
+
     // Enqueue media uploader script only on this specific admin page
     add_action( "admin_print_scripts-{$hook}", 'santagatesi_enqueue_admin_media_uploader' );
 }
