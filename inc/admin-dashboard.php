@@ -79,6 +79,7 @@ function santagatesi_admin_dashboard_callback() {
             <a href="?page=santagatesi-admin-dashboard&tab=immagini_sezione" class="nav-tab <?php echo $active_tab == 'immagini_sezione' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Immagini e Testi', 'santagatesi' ); ?></a>
             <a href="?page=santagatesi-admin-dashboard&tab=webcam" class="nav-tab <?php echo $active_tab == 'webcam' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Webcam', 'santagatesi' ); ?></a>
             <a href="?page=santagatesi-admin-dashboard&tab=gestione_contenuti" class="nav-tab <?php echo $active_tab == 'gestione_contenuti' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Gestione Contenuti Rapida', 'santagatesi' ); ?></a>
+            <a href="?page=santagatesi-admin-dashboard&tab=watermark" class="nav-tab <?php echo $active_tab == 'watermark' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Watermark', 'santagatesi' ); ?></a>
         </h2>
 
         <div class="santagatesi-dashboard-content" style="margin-top: 20px; background: #fff; padding: 20px; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
@@ -318,6 +319,93 @@ function santagatesi_admin_dashboard_callback() {
                     </div>
                 </form>
 
+            <?php elseif ( 'watermark' === $active_tab ) : ?>
+                <!-- TAB WATERMARK -->
+                <h2><?php esc_html_e( 'Sistema di Watermarking Automatico', 'santagatesi' ); ?></h2>
+                <p><?php esc_html_e( 'Applica automaticamente un logo in basso al centro ad ogni nuova immagine caricata sul sito per proteggere i contenuti.', 'santagatesi' ); ?></p>
+
+                <form method="post" action="">
+                    <?php wp_nonce_field( 'santagatesi_save_watermark', 'santagatesi_admin_nonce' ); ?>
+                    <input type="hidden" name="action" value="save_watermark">
+
+                    <table class="form-table">
+                        <tbody>
+                            <tr style="border-top: 1px solid #eee;">
+                                <th scope="row"><label for="watermark_active"><?php esc_html_e( 'Stato Watermark', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <label class="switch" style="position: relative; display: inline-block; width: 40px; height: 20px;">
+                                        <input type="hidden" name="watermark_active" value="0">
+                                        <input type="checkbox" name="watermark_active" id="watermark_active" value="1" <?php checked( get_option( 'santagatesi_watermark_active', '0' ), '1' ); ?> style="margin:0;">
+                                        <span class="slider" style="margin-left:5px;">Attivo</span>
+                                    </label>
+                                    <p class="description"><?php esc_html_e( 'Se abilitato, ogni nuovo caricamento di un\'immagine riceverà il logo.', 'santagatesi' ); ?></p>
+                                </td>
+                            </tr>
+                            <tr style="border-top: 1px solid #eee;">
+                                <th scope="row"><label for="watermark_logo"><?php esc_html_e( 'Logo Watermark (.png)', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <input type="text" name="watermark_logo" id="watermark_logo" value="<?php echo esc_attr( get_option( 'santagatesi_watermark_logo', '' ) ); ?>" class="regular-text" style="width: 100%; max-width: 400px;" placeholder="URL file PNG...">
+                                    <input type="button" class="button button-secondary stg-upload-btn" data-target="watermark_logo" value="<?php esc_attr_e( 'Scegli Logo PNG', 'santagatesi' ); ?>">
+                                    <p class="description"><?php esc_html_e( 'Seleziona un file con trasparenza (.png). Il sistema lo ridimensionerà automaticamente in base alla foto.', 'santagatesi' ); ?></p>
+
+                                    <?php $wm_logo = get_option( 'santagatesi_watermark_logo', '' ); if( $wm_logo ): ?>
+                                        <div style="margin-top:10px; padding: 10px; max-width: 250px; background: #ddd; border: 1px solid #ccc; border-radius: 4px; overflow:hidden;">
+                                            <img src="<?php echo esc_url( $wm_logo ); ?>" alt="Anteprima Logo" style="width: 100%; height: auto; display: block;" id="watermark_logo_preview">
+                                        </div>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <tr style="border-top: 1px solid #eee;">
+                                <th scope="row"><label for="watermark_opacity"><?php esc_html_e( 'Opacità (1-100)', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <input type="number" name="watermark_opacity" id="watermark_opacity" value="<?php echo esc_attr( get_option( 'santagatesi_watermark_opacity', '100' ) ); ?>" class="small-text" min="1" max="100"> %
+                                    <p class="description"><?php esc_html_e( '100% è solido. 50% è semitrasparente. Utile se il file PNG originale è troppo visibile.', 'santagatesi' ); ?></p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <?php submit_button( __( 'Salva Impostazioni Watermark', 'santagatesi' ), 'primary', 'submit_watermark' ); ?>
+                </form>
+
+                <!-- JS Script per collegare Media Uploader al bottone (se non già caricato) -->
+                <script>
+                    jQuery(document).ready(function($){
+                        if(typeof custom_uploader === 'undefined') {
+                            var custom_uploader;
+                            $('.stg-upload-btn').click(function(e) {
+                                e.preventDefault();
+                                var target_input = $('#' + $(this).data('target'));
+                                var target_preview = $('#' + $(this).data('target') + '_preview');
+
+                                if (custom_uploader) {
+                                    custom_uploader.open();
+                                    return;
+                                }
+
+                                custom_uploader = wp.media.frames.file_frame = wp.media({
+                                    title: 'Scegli Immagine',
+                                    button: { text: 'Seleziona' },
+                                    multiple: false,
+                                    library: { type: 'image' }
+                                });
+
+                                custom_uploader.on('select', function() {
+                                    var attachment = custom_uploader.state().get('selection').first().toJSON();
+                                    target_input.val(attachment.url);
+                                    if(target_preview.length) {
+                                        target_preview.attr('src', attachment.url);
+                                    } else {
+                                        target_input.parent().append('<div style="margin-top:10px; padding: 10px; max-width: 250px; background: #ddd; border: 1px solid #ccc; border-radius: 4px; overflow:hidden;"><img src="'+attachment.url+'" style="width: 100%; height: auto; display: block;" id="'+$(this).data('target')+'_preview"></div>');
+                                    }
+                                });
+
+                                custom_uploader.open();
+                            });
+                        }
+                    });
+                </script>
+
             <?php endif; ?>
         </div>
     </div>
@@ -339,14 +427,28 @@ function santagatesi_process_admin_dashboard_forms() {
         wp_die( 'Accesso Negato.' );
     }
 
-    if ( ! isset( $_POST['santagatesi_admin_nonce'] ) || ( ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_section_images' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_webcams' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_content_visibility' ) ) ) {
+    if ( ! isset( $_POST['santagatesi_admin_nonce'] ) || ( ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_section_images' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_webcams' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_content_visibility' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_watermark' ) ) ) {
         wp_die( 'Validazione di sicurezza fallita (Nonce).' );
     }
 
     $action = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
 
     // 2. Logica di salvataggio basata sull'azione
-    if ( 'save_section_images' === $action && isset( $_POST['submit_images'] ) ) {
+    if ( 'save_watermark' === $action && isset( $_POST['submit_watermark'] ) ) {
+        $watermark_active = isset( $_POST['watermark_active'] ) && $_POST['watermark_active'] === '1' ? '1' : '0';
+        $watermark_logo   = isset( $_POST['watermark_logo'] ) ? esc_url_raw( wp_unslash( $_POST['watermark_logo'] ) ) : '';
+        $watermark_opacity= isset( $_POST['watermark_opacity'] ) ? intval( wp_unslash( $_POST['watermark_opacity'] ) ) : 100;
+
+        if ( $watermark_opacity < 0 ) $watermark_opacity = 0;
+        if ( $watermark_opacity > 100 ) $watermark_opacity = 100;
+
+        update_option( 'santagatesi_watermark_active', $watermark_active );
+        update_option( 'santagatesi_watermark_logo', $watermark_logo );
+        update_option( 'santagatesi_watermark_opacity', $watermark_opacity );
+
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Impostazioni Watermark salvate con successo!', 'santagatesi' ) . '</p></div>';
+    }
+    elseif ( 'save_section_images' === $action && isset( $_POST['submit_images'] ) ) {
 
         if ( isset( $_POST['hero_data'] ) && is_array( $_POST['hero_data'] ) ) {
             $sanitized_data = array();
