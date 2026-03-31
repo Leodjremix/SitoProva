@@ -284,7 +284,6 @@ p {
     background-attachment: fixed; /* Leggero effetto parallax nativo */
 	padding-top: 100px; /* Accounts for header overlap so content remains centered */
     overflow: hidden;
-    margin-top: -100px; /* Pulls the section up under the fixed header */
 }
 
 /* Sfondo Sfumato (Vignettatura Emozionale per dare risalto al testo) */
@@ -407,25 +406,6 @@ body {
     padding-top: 0 !important;
 }
 
-/* Add top padding to the main wrapper to compensate for the fixed header height on non-hero pages */
-/* We apply this to the site-content wrapper, but exclude templates that have their own immersive hero logic */
-.site-content {
-    padding-top: 100px;
-}
-
-/* Remove the compensation padding specifically on pages that use hero headers */
-.home .site-content,
-.front-page .site-content,
-.page-template-page-eventi .site-content,
-.page-template-page-video .site-content,
-.page-template-page-chi-siamo .site-content,
-.page-template-page-libro-saluti .site-content,
-.page-template-page-media-gallery .site-content,
-.page-template-page-santagatesi-illustri .site-content,
-.page-template-page-utilita-e-links .site-content,
-.single-post .site-content {
-    padding-top: 0;
-}
 
 /* Override Astra's default display properties to fix mobile navbar squishing */
 @media (max-width: 1023px) {

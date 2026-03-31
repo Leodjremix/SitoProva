@@ -27,7 +27,7 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 	<!-- Hero Section dell'Archivio -->
 	<section class="hero-section relative h-[40vh] min-h-[400px] flex items-center justify-center bg-cover bg-center" style="<?php echo esc_attr( $inline_style ); ?>">
         <div class="absolute inset-0 bg-black/50 z-0"></div> <!-- Overlay scuro per leggibilità -->
-		<div class="container relative z-10 text-center">
+		<div class="container relative z-10 text-center pt-24">
 			<div class="tonal-panel mx-auto max-w-4xl bg-[var(--color-surface-container-lowest)]/95 backdrop-blur-md p-8 rounded-2xl shadow-[var(--shadow-ambient)]">
 				<h1 class="text-4xl md:text-5xl font-bold mb-4 text-[var(--color-primary)] font-display"><?php echo esc_html( $hero_title ); ?></h1>
 				<?php if ( $hero_subtitle ) : ?>

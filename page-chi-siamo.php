@@ -23,7 +23,7 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 
 	<!-- Hero Section -->
 	<section class="hero-section" style="<?php echo esc_attr( $inline_style ); ?>">
-		<div class="container relative z-10 py-24 flex justify-center">
+		<div class="container relative z-10 py-24 flex justify-center pt-32">
 			<div class="tonal-panel mx-auto max-w-4xl text-center bg-white/90 backdrop-blur-md">
 				<h1 class="text-4xl md:text-6xl font-bold mb-6 text-[var(--color-primary)] font-display"><?php echo esc_html( $hero_title ); ?></h1>
 				<?php if ( $hero_subtitle ) : ?>

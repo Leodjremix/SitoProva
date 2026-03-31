@@ -31,7 +31,7 @@ $hero_bg_dynamic  = !empty($guestbook_hero['bg_image']) ? $guestbook_hero['bg_im
             <div class="absolute top-20 -right-20 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
 		<?php endif; ?>
 
-		<div class="container relative z-10 text-center px-4">
+		<div class="container relative z-10 text-center px-4 pt-24">
 			<span class="text-[var(--color-accent)] font-semibold tracking-widest uppercase text-sm mb-6 block font-body">Bacheca Globale</span>
 			<h1 class="text-5xl md:text-7xl font-extrabold text-[var(--color-primary)] mb-8 font-display drop-shadow-sm">
 				<?php echo esc_html( $hero_title ); ?>

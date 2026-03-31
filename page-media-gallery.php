@@ -47,7 +47,7 @@ $hero_bg_dynamic  = !empty($gallery_hero['bg_image']) ? $gallery_hero['bg_image'
             <div class="absolute top-20 -right-20 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
 		<?php endif; ?>
 
-		<div class="container relative z-10 text-center px-4">
+		<div class="container relative z-10 text-center px-4 pt-24">
 			<span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-[var(--color-accent)] font-semibold tracking-widest uppercase text-xs mb-6 font-body shadow-sm">
 				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
 				Esplora i Ricordi

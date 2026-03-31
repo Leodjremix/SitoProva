@@ -15,8 +15,8 @@
 get_header();
 ?>
 
-	<main id="primary" class="site-main">
-		<div class="container section">
+	<main id="primary" class="site-main pt-32 pb-24">
+		<div class="container section mt-8">
 			<?php
 			if ( have_posts() ) :
 

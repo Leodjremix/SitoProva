@@ -15,9 +15,9 @@ get_header();
 		<?php if ( have_posts() ) : ?>
 
 			<!-- Header Archivio -->
-			<header class="page-header py-24 bg-[var(--color-surface-container-lowest)] border-b border-[var(--color-surface-container-low)] mb-16 shadow-[var(--shadow-ambient)] text-center relative overflow-hidden">
+			<header class="page-header pt-32 pb-20 bg-[var(--color-surface-container-lowest)] border-b border-[var(--color-surface-container-low)] mb-16 shadow-[var(--shadow-ambient)] text-center relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-surface)] to-transparent opacity-50"></div>
-                <div class="container relative z-10 px-4">
+                <div class="container relative z-10 px-4 mt-8">
                     <?php
                     // Titolo
                     the_archive_title( '<h1 class="page-title text-4xl md:text-6xl font-extrabold text-[var(--color-primary)] font-display mb-6 tracking-tight">', '</h1>' );

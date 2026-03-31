@@ -89,7 +89,7 @@ $hero_bg = !empty($eventi_hero['bg_image']) ? $eventi_hero['bg_image'] : '';
 			<div class="absolute inset-0 z-10 bg-gradient-to-t from-[var(--color-surface)] via-transparent to-black/40"></div>
 
 			<!-- Contenuto Hero -->
-			<div class="container relative z-20 text-center px-4">
+			<div class="container relative z-20 text-center px-4 pt-24">
 				<div class="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl">
 					<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white drop-shadow-md"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
 				</div>
@@ -108,7 +108,7 @@ $hero_bg = !empty($eventi_hero['bg_image']) ? $eventi_hero['bg_image'] : '';
 	<section class="section py-24">
 		<div class="container">
 			<?php if ( ! $hero_bg ) : ?>
-			<header class="text-center mb-20">
+			<header class="text-center mb-20 pt-24">
 				<h1 class="text-5xl md:text-6xl font-bold mb-6 flex items-center justify-center gap-4 text-[var(--color-primary)] font-display">
 					<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[var(--color-accent)]"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
 					<?php echo esc_html($hero_title); ?>

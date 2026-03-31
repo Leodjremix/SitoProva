@@ -27,7 +27,7 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 	<!-- Hero Section -->
 	<section class="hero-section relative h-[35vh] min-h-[300px] flex items-center justify-center bg-cover bg-center" style="<?php echo esc_attr( $inline_style ); ?>">
         <div class="absolute inset-0 bg-black/60 z-0"></div> <!-- Overlay scuro -->
-		<div class="container relative z-10 text-center">
+		<div class="container relative z-10 text-center pt-24">
 			<div class="tonal-panel mx-auto max-w-3xl bg-[var(--color-surface-container-lowest)]/95 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-[var(--color-surface-container-low)]">
 				<h1 class="text-3xl md:text-5xl font-bold mb-3 text-[var(--color-primary)] font-display"><?php echo esc_html( $hero_title ); ?></h1>
 				<?php if ( $hero_subtitle ) : ?>

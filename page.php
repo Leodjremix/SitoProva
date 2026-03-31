@@ -23,10 +23,10 @@ get_header();
 			?>
 
             <!-- Header della Pagina Statico -->
-			<header class="page-header py-20 bg-[var(--color-surface-container-lowest)] shadow-[var(--shadow-ambient)] text-center relative overflow-hidden mb-16 border-b border-[var(--color-surface-container-low)]">
+			<header class="page-header pt-32 pb-20 bg-[var(--color-surface-container-lowest)] shadow-[var(--shadow-ambient)] text-center relative overflow-hidden mb-16 border-b border-[var(--color-surface-container-low)]">
                 <!-- Background decorativo opzionale -->
                 <div class="absolute inset-0 bg-gradient-to-t from-[var(--color-surface)] to-transparent opacity-50 pointer-events-none"></div>
-                <div class="container relative z-10 px-4">
+                <div class="container relative z-10 px-4 mt-8">
                     <?php the_title( '<h1 class="page-title text-4xl md:text-6xl font-extrabold text-[var(--color-primary)] font-display tracking-tight leading-tight">', '</h1>' ); ?>
                 </div>
 			</header><!-- .page-header -->
