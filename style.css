@@ -402,11 +402,29 @@ body {
     padding-top: 100px;
 }
 
-/* Remove body padding on pages with a hero section so the hero sits flush behind the transparent navbar */
-body.home,
-body.page-template-hero,
-body.front-page {
+/* Remove body padding globally so that any hero section on any page sits flush behind the transparent navbar */
+body {
     padding-top: 0 !important;
+}
+
+/* Add top padding to the main wrapper to compensate for the fixed header height on non-hero pages */
+/* We apply this to the site-content wrapper, but exclude templates that have their own immersive hero logic */
+.site-content {
+    padding-top: 100px;
+}
+
+/* Remove the compensation padding specifically on pages that use hero headers */
+.home .site-content,
+.front-page .site-content,
+.page-template-page-eventi .site-content,
+.page-template-page-video .site-content,
+.page-template-page-chi-siamo .site-content,
+.page-template-page-libro-saluti .site-content,
+.page-template-page-media-gallery .site-content,
+.page-template-page-santagatesi-illustri .site-content,
+.page-template-page-utilita-e-links .site-content,
+.single-post .site-content {
+    padding-top: 0;
 }
 
 /* Override Astra's default display properties to fix mobile navbar squishing */
