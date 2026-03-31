@@ -273,7 +273,7 @@ p {
 /* -------------------------------------------------------------------------- */
 .hero-section {
 	position: relative;
-	min-height: 95vh !important; /* Molto più ariosa, forzato su Astra defaults */
+	min-height: 100vh !important; /* Molto più ariosa, forzato su Astra defaults */
 	height: 100%;
 	display: flex;
 	align-items: center;
@@ -282,8 +282,9 @@ p {
 	background-repeat: no-repeat;
 	background-size: cover;
     background-attachment: fixed; /* Leggero effetto parallax nativo */
-	padding-top: 80px;
+	padding-top: 100px; /* Accounts for header overlap so content remains centered */
     overflow: hidden;
+    margin-top: -100px; /* Pulls the section up under the fixed header */
 }
 
 /* Sfondo Sfumato (Vignettatura Emozionale per dare risalto al testo) */
@@ -399,6 +400,13 @@ p {
 /* -------------------------------------------------------------------------- */
 body {
     padding-top: 100px;
+}
+
+/* Remove body padding on pages with a hero section so the hero sits flush behind the transparent navbar */
+body.home,
+body.page-template-hero,
+body.front-page {
+    padding-top: 0 !important;
 }
 
 /* Override Astra's default display properties to fix mobile navbar squishing */
