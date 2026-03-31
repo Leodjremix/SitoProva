@@ -362,6 +362,29 @@ function santagatesi_admin_dashboard_callback() {
                                     <p class="description"><?php esc_html_e( '100% è solido. 50% è semitrasparente. Utile se il file PNG originale è troppo visibile.', 'santagatesi' ); ?></p>
                                 </td>
                             </tr>
+                            <tr style="border-top: 1px solid #eee;">
+                                <th scope="row"><label for="watermark_size"><?php esc_html_e( 'Dimensione (1-100%)', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <input type="number" name="watermark_size" id="watermark_size" value="<?php echo esc_attr( get_option( 'santagatesi_watermark_size', '20' ) ); ?>" class="small-text" min="1" max="100"> %
+                                    <p class="description"><?php esc_html_e( 'Specifica quanto deve essere grande il logo rispetto alla larghezza totale della foto. (es. 20 = occupa il 20% della foto in basso).', 'santagatesi' ); ?></p>
+                                </td>
+                            </tr>
+                            <tr style="border-top: 1px solid #eee;">
+                                <th scope="row"><label for="watermark_position"><?php esc_html_e( 'Posizione', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <?php $current_pos = get_option( 'santagatesi_watermark_position', 'bottom_center' ); ?>
+                                    <select name="watermark_position" id="watermark_position" class="regular-text">
+                                        <option value="bottom_center" <?php selected( $current_pos, 'bottom_center' ); ?>><?php esc_html_e( 'In basso, al centro', 'santagatesi' ); ?></option>
+                                        <option value="bottom_right" <?php selected( $current_pos, 'bottom_right' ); ?>><?php esc_html_e( 'In basso, a destra', 'santagatesi' ); ?></option>
+                                        <option value="bottom_left" <?php selected( $current_pos, 'bottom_left' ); ?>><?php esc_html_e( 'In basso, a sinistra', 'santagatesi' ); ?></option>
+                                        <option value="center" <?php selected( $current_pos, 'center' ); ?>><?php esc_html_e( 'Perfettamente al centro', 'santagatesi' ); ?></option>
+                                        <option value="top_center" <?php selected( $current_pos, 'top_center' ); ?>><?php esc_html_e( 'In alto, al centro', 'santagatesi' ); ?></option>
+                                        <option value="top_right" <?php selected( $current_pos, 'top_right' ); ?>><?php esc_html_e( 'In alto, a destra', 'santagatesi' ); ?></option>
+                                        <option value="top_left" <?php selected( $current_pos, 'top_left' ); ?>><?php esc_html_e( 'In alto, a sinistra', 'santagatesi' ); ?></option>
+                                    </select>
+                                    <p class="description"><?php esc_html_e( 'Scegli in quale angolo (o centro) posizionare il watermark.', 'santagatesi' ); ?></p>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
 
@@ -438,13 +461,24 @@ function santagatesi_process_admin_dashboard_forms() {
         $watermark_active = isset( $_POST['watermark_active'] ) && $_POST['watermark_active'] === '1' ? '1' : '0';
         $watermark_logo   = isset( $_POST['watermark_logo'] ) ? esc_url_raw( wp_unslash( $_POST['watermark_logo'] ) ) : '';
         $watermark_opacity= isset( $_POST['watermark_opacity'] ) ? intval( wp_unslash( $_POST['watermark_opacity'] ) ) : 100;
+        $watermark_size   = isset( $_POST['watermark_size'] ) ? intval( wp_unslash( $_POST['watermark_size'] ) ) : 20;
+        $watermark_position = isset( $_POST['watermark_position'] ) ? sanitize_text_field( wp_unslash( $_POST['watermark_position'] ) ) : 'bottom_center';
 
         if ( $watermark_opacity < 0 ) $watermark_opacity = 0;
         if ( $watermark_opacity > 100 ) $watermark_opacity = 100;
+        if ( $watermark_size < 1 ) $watermark_size = 1;
+        if ( $watermark_size > 100 ) $watermark_size = 100;
+
+        $allowed_positions = ['bottom_center', 'bottom_right', 'bottom_left', 'center', 'top_center', 'top_right', 'top_left'];
+        if ( ! in_array( $watermark_position, $allowed_positions ) ) {
+            $watermark_position = 'bottom_center';
+        }
 
         update_option( 'santagatesi_watermark_active', $watermark_active );
         update_option( 'santagatesi_watermark_logo', $watermark_logo );
         update_option( 'santagatesi_watermark_opacity', $watermark_opacity );
+        update_option( 'santagatesi_watermark_size', $watermark_size );
+        update_option( 'santagatesi_watermark_position', $watermark_position );
 
         echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Impostazioni Watermark salvate con successo!', 'santagatesi' ) . '</p></div>';
     }

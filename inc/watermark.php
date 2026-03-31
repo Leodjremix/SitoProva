@@ -61,6 +61,12 @@ function santagatesi_apply_watermark_on_upload( $upload ) {
     if ( $opacity < 0 ) $opacity = 0;
     if ( $opacity > 100 ) $opacity = 100;
 
+    $size_pct = (int) get_option( 'santagatesi_watermark_size', 20 );
+    if ( $size_pct < 1 ) $size_pct = 1;
+    if ( $size_pct > 100 ) $size_pct = 100;
+
+    $position = get_option( 'santagatesi_watermark_position', 'bottom_center' );
+
     // 4. Check if we are trying to watermark the watermark logo itself
     // We prevent this by checking filenames or sizes, or setting a transient/flag during logo upload.
     // However, the easiest way is checking if the uploaded file is exactly the same as the watermark logo.
@@ -69,7 +75,7 @@ function santagatesi_apply_watermark_on_upload( $upload ) {
     }
 
     // 5. Apply the Watermark
-    $result = santagatesi_process_image_watermark( $upload['file'], $mime_type, $watermark_path, $opacity );
+    $result = santagatesi_process_image_watermark( $upload['file'], $mime_type, $watermark_path, $opacity, $size_pct, $position );
 
     if ( is_wp_error( $result ) ) {
         error_log( 'Santagatesi Watermark Error: ' . $result->get_error_message() );
@@ -87,9 +93,11 @@ add_filter( 'wp_handle_upload', 'santagatesi_apply_watermark_on_upload' );
  * @param string $mime_type Mime type of the uploaded image.
  * @param string $watermark_path Physical path to the watermark PNG.
  * @param int $opacity Opacity level (0-100).
+ * @param int $size_pct Percentage size of the watermark relative to target image (1-100).
+ * @param string $position Where to position the watermark.
  * @return bool|WP_Error True on success, WP_Error on failure.
  */
-function santagatesi_process_image_watermark( $target_image_path, $mime_type, $watermark_path, $opacity ) {
+function santagatesi_process_image_watermark( $target_image_path, $mime_type, $watermark_path, $opacity, $size_pct, $position ) {
 
     if ( ! extension_loaded('gd') || ! function_exists('gd_info') ) {
         return new WP_Error( 'gd_missing', 'Estensione PHP GD non trovata sul server.' );
@@ -137,8 +145,7 @@ function santagatesi_process_image_watermark( $target_image_path, $mime_type, $w
     $wm_orig_height = imagesy( $watermark_image );
 
     // Determine scale based on target image width.
-    // We want the watermark to cover e.g. 20% of the target image width.
-    $scale_percentage = 0.20;
+    $scale_percentage = $size_pct / 100.0;
 
     $wm_new_width  = (int) ( $target_width * $scale_percentage );
     // Ensure it doesn't scale up past its original size and get blurry
@@ -167,10 +174,44 @@ function santagatesi_process_image_watermark( $target_image_path, $mime_type, $w
 
     imagedestroy( $watermark_image );
 
-    // 5. Calculate Position (Bottom Center)
-    $margin_bottom = (int) ( $target_height * 0.05 ); // 5% margin from bottom
-    $pos_x = (int) ( ( $target_width / 2 ) - ( $wm_new_width / 2 ) );
-    $pos_y = (int) ( $target_height - $wm_new_height - $margin_bottom );
+    // 5. Calculate Position
+    $margin_x = (int) ( $target_width * 0.05 ); // 5% horizontal margin
+    $margin_y = (int) ( $target_height * 0.05 ); // 5% vertical margin
+
+    $pos_x = 0;
+    $pos_y = 0;
+
+    switch ( $position ) {
+        case 'bottom_right':
+            $pos_x = $target_width - $wm_new_width - $margin_x;
+            $pos_y = $target_height - $wm_new_height - $margin_y;
+            break;
+        case 'bottom_left':
+            $pos_x = $margin_x;
+            $pos_y = $target_height - $wm_new_height - $margin_y;
+            break;
+        case 'center':
+            $pos_x = (int) ( ( $target_width / 2 ) - ( $wm_new_width / 2 ) );
+            $pos_y = (int) ( ( $target_height / 2 ) - ( $wm_new_height / 2 ) );
+            break;
+        case 'top_center':
+            $pos_x = (int) ( ( $target_width / 2 ) - ( $wm_new_width / 2 ) );
+            $pos_y = $margin_y;
+            break;
+        case 'top_right':
+            $pos_x = $target_width - $wm_new_width - $margin_x;
+            $pos_y = $margin_y;
+            break;
+        case 'top_left':
+            $pos_x = $margin_x;
+            $pos_y = $margin_y;
+            break;
+        case 'bottom_center':
+        default:
+            $pos_x = (int) ( ( $target_width / 2 ) - ( $wm_new_width / 2 ) );
+            $pos_y = $target_height - $wm_new_height - $margin_y;
+            break;
+    }
 
     // 6. Apply Watermark with Opacity
     // To handle opacity correctly with PNG alpha channels in PHP GD,
