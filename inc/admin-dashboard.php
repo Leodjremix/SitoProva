@@ -100,6 +100,7 @@ function santagatesi_admin_dashboard_callback() {
                             // Definizione delle Pagine/Sezioni configurabili dinamicamente
                             $hero_sections = array(
                                 'home' => 'Home Page (Testata Principale)',
+                                'chi_siamo' => 'Pagina Chi Siamo',
                                 'eventi' => 'Pagina Eventi',
                                 'video' => 'Pagina Video',
                                 'link' => 'Attività e Link Utili',
