@@ -72,31 +72,29 @@
                     </ul>
                 </div>
 
-                <!-- Colonna 4: Box Donazioni Prominente -->
-                <div class="footer-widget bg-white p-6 rounded-2xl shadow-sm border border-[var(--color-surface)] relative overflow-hidden">
-                    <!-- Deco bg -->
-                    <div class="absolute -right-4 -bottom-4 text-[var(--color-surface-container-low)] opacity-50">
-                        <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    </div>
+                <!-- Colonna 4: Statistiche & Contatori -->
+                <div class="footer-widget flex flex-col gap-6">
 
-                    <h3 class="text-xl font-bold text-[var(--color-primary)] font-display mb-3 relative z-10 flex items-center gap-2">
-                        <svg class="text-red-500" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        Sostienici
-                    </h3>
-                    <p class="text-xs text-[var(--color-on-surface-muted)] mb-4 font-body leading-relaxed relative z-10">
-                        Il tuo contributo ci permette di mantenere attive le webcam e il portale.
-                    </p>
-
-                    <div class="space-y-3 relative z-10">
-                        <div class="bg-[var(--color-surface-container-low)] p-3 rounded-lg">
-                            <span class="block text-[10px] uppercase font-bold text-[var(--color-accent)] mb-1">C/C Postale</span>
-                            <span class="font-mono text-sm text-[var(--color-primary)] font-bold">001023412800</span>
+                    <!-- Box Contatore Visite -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-[var(--color-surface)] relative overflow-hidden transition-transform hover:-translate-y-1">
+                        <div class="absolute -right-4 -bottom-4 text-[var(--color-surface-container-low)] opacity-50">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                         </div>
-                        <div class="bg-[var(--color-surface-container-low)] p-3 rounded-lg">
-                            <span class="block text-[10px] uppercase font-bold text-[var(--color-accent)] mb-1">IBAN</span>
-                            <span class="font-mono text-xs text-[var(--color-primary)] font-bold break-all">IT08A0760115700001023412800</span>
+                        <div class="relative z-10">
+                            <?php echo do_shortcode('[contatore_totale]'); ?>
                         </div>
                     </div>
+
+                    <!-- Box Statistiche YouTube -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-[var(--color-surface)] relative overflow-hidden transition-transform hover:-translate-y-1">
+                        <div class="absolute -right-4 -bottom-4 text-[var(--color-surface-container-low)] opacity-50">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                        </div>
+                        <div class="relative z-10">
+                            <?php echo do_shortcode('[youtube_views]'); ?>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>

@@ -80,6 +80,7 @@ function santagatesi_admin_dashboard_callback() {
             <a href="?page=santagatesi-admin-dashboard&tab=webcam" class="nav-tab <?php echo $active_tab == 'webcam' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Webcam', 'santagatesi' ); ?></a>
             <a href="?page=santagatesi-admin-dashboard&tab=gestione_contenuti" class="nav-tab <?php echo $active_tab == 'gestione_contenuti' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Gestione Contenuti Rapida', 'santagatesi' ); ?></a>
             <a href="?page=santagatesi-admin-dashboard&tab=watermark" class="nav-tab <?php echo $active_tab == 'watermark' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Watermark', 'santagatesi' ); ?></a>
+            <a href="?page=santagatesi-admin-dashboard&tab=integrazioni" class="nav-tab <?php echo $active_tab == 'integrazioni' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Integrazioni & API', 'santagatesi' ); ?></a>
         </h2>
 
         <div class="santagatesi-dashboard-content" style="margin-top: 20px; background: #fff; padding: 20px; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
@@ -429,6 +430,68 @@ function santagatesi_admin_dashboard_callback() {
                     });
                 </script>
 
+            <?php elseif ( 'integrazioni' === $active_tab ) : ?>
+                <!-- TAB INTEGRAZIONI E API -->
+                <h2><?php esc_html_e( 'Integrazioni Esterne e Contatori', 'santagatesi' ); ?></h2>
+                <p><?php esc_html_e( 'Gestisci le chiavi API per servizi esterni (Meteo, YouTube) e configura i contatori storici.', 'santagatesi' ); ?></p>
+
+                <form method="post" action="">
+                    <?php wp_nonce_field( 'santagatesi_save_integrazioni', 'santagatesi_admin_nonce' ); ?>
+                    <input type="hidden" name="action" value="save_integrazioni">
+
+                    <table class="form-table">
+                        <tbody>
+                            <tr style="border-top: 2px solid #2271b1; background-color: #f6f7f7;">
+                                <td colspan="2" style="padding: 15px 10px;">
+                                    <h3 style="margin: 0; color: #1d2327;"><span class="dashicons dashicons-cloud" style="vertical-align: middle; margin-right: 5px;"></span><?php esc_html_e( 'Meteo in Tempo Reale (OpenWeatherMap)', 'santagatesi' ); ?></h3>
+                                </td>
+                            </tr>
+                            <tr style="background-color: #fafafa;">
+                                <th scope="row"><label for="owm_api_key"><?php esc_html_e( 'API Key OpenWeatherMap', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <input type="text" name="owm_api_key" id="owm_api_key" value="<?php echo esc_attr( get_option( 'santagatesi_owm_api_key', '' ) ); ?>" class="regular-text" style="width: 100%; max-width: 400px;" placeholder="Inserisci la chiave API...">
+                                    <p class="description"><?php esc_html_e( 'Necessaria per lo shortcode [meteo_santagata]. Ottieni una chiave gratuita registrandoti su openweathermap.org.', 'santagatesi' ); ?></p>
+                                </td>
+                            </tr>
+
+                            <tr style="border-top: 2px solid #2271b1; background-color: #f6f7f7;">
+                                <td colspan="2" style="padding: 15px 10px;">
+                                    <h3 style="margin: 0; color: #1d2327;"><span class="dashicons dashicons-video-alt3" style="vertical-align: middle; margin-right: 5px;"></span><?php esc_html_e( 'Statistiche Canale YouTube', 'santagatesi' ); ?></h3>
+                                </td>
+                            </tr>
+                            <tr style="background-color: #fafafa;">
+                                <th scope="row"><label for="yt_api_key"><?php esc_html_e( 'API Key YouTube (v3)', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <input type="text" name="yt_api_key" id="yt_api_key" value="<?php echo esc_attr( get_option( 'santagatesi_yt_api_key', '' ) ); ?>" class="regular-text" style="width: 100%; max-width: 400px;" placeholder="Inserisci la chiave API Google...">
+                                    <p class="description"><?php esc_html_e( 'Necessaria per leggere le statistiche ufficiali del canale tramite lo shortcode [youtube_views].', 'santagatesi' ); ?></p>
+                                </td>
+                            </tr>
+                            <tr style="background-color: #fafafa; border-bottom: 1px solid #ccc;">
+                                <th scope="row"><label for="yt_channel_id"><?php esc_html_e( 'ID Canale YouTube', 'santagatesi' ); ?></label></th>
+                                <td style="padding-bottom: 20px;">
+                                    <input type="text" name="yt_channel_id" id="yt_channel_id" value="<?php echo esc_attr( get_option( 'santagatesi_yt_channel_id', 'UC099s02rD1fWbHh4f9Wk9VQ' ) ); ?>" class="regular-text" style="width: 100%; max-width: 300px;" placeholder="Es: UC099s02rD1fWbHh4f9Wk9VQ">
+                                    <p class="description"><?php esc_html_e( 'L\'ID univoco del canale Artemisium (inizia solitamente con UC).', 'santagatesi' ); ?></p>
+                                </td>
+                            </tr>
+
+                            <tr style="border-top: 2px solid #2271b1; background-color: #f6f7f7;">
+                                <td colspan="2" style="padding: 15px 10px;">
+                                    <h3 style="margin: 0; color: #1d2327;"><span class="dashicons dashicons-chart-bar" style="vertical-align: middle; margin-right: 5px;"></span><?php esc_html_e( 'Contatore Visite Storico', 'santagatesi' ); ?></h3>
+                                </td>
+                            </tr>
+                            <tr style="background-color: #fafafa;">
+                                <th scope="row"><label for="visite_base"><?php esc_html_e( 'Contatore Base di Partenza', 'santagatesi' ); ?></label></th>
+                                <td>
+                                    <input type="number" name="visite_base" id="visite_base" value="<?php echo esc_attr( get_option( 'santagatesi_visite_totali', '1300000' ) ); ?>" class="regular-text" style="width: 100%; max-width: 200px;" min="0">
+                                    <p class="description"><?php esc_html_e( 'Questo numero aumenta automaticamente di 1 per ogni nuova sessione di visita. Utilizzato dallo shortcode [contatore_totale].', 'santagatesi' ); ?></p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <?php submit_button( __( 'Salva Integrazioni', 'santagatesi' ), 'primary', 'submit_integrazioni' ); ?>
+                </form>
+
             <?php endif; ?>
         </div>
     </div>
@@ -450,14 +513,30 @@ function santagatesi_process_admin_dashboard_forms() {
         wp_die( 'Accesso Negato.' );
     }
 
-    if ( ! isset( $_POST['santagatesi_admin_nonce'] ) || ( ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_section_images' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_webcams' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_content_visibility' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_watermark' ) ) ) {
+    if ( ! isset( $_POST['santagatesi_admin_nonce'] ) || ( ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_section_images' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_webcams' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_content_visibility' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_watermark' ) && ! wp_verify_nonce( $_POST['santagatesi_admin_nonce'], 'santagatesi_save_integrazioni' ) ) ) {
         wp_die( 'Validazione di sicurezza fallita (Nonce).' );
     }
 
     $action = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : '';
 
     // 2. Logica di salvataggio basata sull'azione
-    if ( 'save_watermark' === $action && isset( $_POST['submit_watermark'] ) ) {
+    if ( 'save_integrazioni' === $action && isset( $_POST['submit_integrazioni'] ) ) {
+        $owm_api = isset( $_POST['owm_api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['owm_api_key'] ) ) : '';
+        $yt_api  = isset( $_POST['yt_api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['yt_api_key'] ) ) : '';
+        $yt_id   = isset( $_POST['yt_channel_id'] ) ? sanitize_text_field( wp_unslash( $_POST['yt_channel_id'] ) ) : '';
+        $visite  = isset( $_POST['visite_base'] ) ? intval( wp_unslash( $_POST['visite_base'] ) ) : 0;
+
+        update_option( 'santagatesi_owm_api_key', $owm_api );
+        update_option( 'santagatesi_yt_api_key', $yt_api );
+        update_option( 'santagatesi_yt_channel_id', $yt_id );
+
+        // Se l'admin setta manualmente un numero di visite, lo impostiamo direttamente.
+        // Questo sovrascriverà l'avanzamento incrementale attuale.
+        update_option( 'santagatesi_visite_totali', $visite );
+
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Impostazioni Integrazioni e API salvate con successo!', 'santagatesi' ) . '</p></div>';
+    }
+    elseif ( 'save_watermark' === $action && isset( $_POST['submit_watermark'] ) ) {
         $watermark_active = isset( $_POST['watermark_active'] ) && $_POST['watermark_active'] === '1' ? '1' : '0';
         $watermark_logo   = isset( $_POST['watermark_logo'] ) ? esc_url_raw( wp_unslash( $_POST['watermark_logo'] ) ) : '';
         $watermark_opacity= isset( $_POST['watermark_opacity'] ) ? intval( wp_unslash( $_POST['watermark_opacity'] ) ) : 100;

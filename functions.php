@@ -32,7 +32,8 @@ $includes = [
     '/inc/frontend-settings.php',
     '/inc/frontend-eventi.php',
     '/inc/admin-dashboard.php',
-    '/inc/watermark.php'
+    '/inc/watermark.php',
+    '/inc/integrations.php'
 ];
 
 foreach ( $includes as $file ) {
