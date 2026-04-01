@@ -134,7 +134,7 @@ function santagatesi_admin_dashboard_callback() {
                                     <textarea name="hero_data[<?php echo esc_attr($id); ?>][subtitle]" id="hero_subtitle_<?php echo esc_attr($id); ?>" rows="2" style="width: 100%; max-width: 600px;" placeholder="Sottotitolo o breve descrizione..."><?php echo esc_textarea( $subtitle ); ?></textarea>
                                 </td>
                             </tr>
-                            <tr style="border-bottom: 1px solid #ccc; background-color: #fafafa;">
+                            <tr style="background-color: #fafafa;">
                                 <th scope="row"><label for="hero_bg_<?php echo esc_attr($id); ?>"><?php esc_html_e( 'Immagine Sfondo', 'santagatesi' ); ?></label></th>
                                 <td style="padding-bottom: 20px;">
                                     <input type="text" name="hero_data[<?php echo esc_attr($id); ?>][bg_image]" id="hero_bg_<?php echo esc_attr($id); ?>" value="<?php echo esc_attr( $bg_img ); ?>" class="regular-text" style="width: 100%; max-width: 400px;" placeholder="URL immagine (carica dalla libreria media)">
@@ -146,6 +146,34 @@ function santagatesi_admin_dashboard_callback() {
                                     <?php endif; ?>
                                 </td>
                             </tr>
+                            <?php
+                                // Se stiamo configurando la pagina "Chi Siamo", aggiungiamo l'editor di testo personalizzato in basso
+                                if ( $id === 'chi_siamo' ) :
+                                    $chisiamo_content = isset($hero_data[$id]['content']) ? $hero_data[$id]['content'] : '';
+                            ?>
+                                <tr style="border-bottom: 1px solid #ccc; background-color: #fafafa;">
+                                    <th scope="row"><label><?php esc_html_e( 'Testo Principale (Chi Siamo)', 'santagatesi' ); ?></label></th>
+                                    <td style="padding-bottom: 30px;">
+                                        <?php
+                                        wp_editor(
+                                            wp_kses_post( $chisiamo_content ),
+                                            'hero_content_chi_siamo', // ID del textarea
+                                            array(
+                                                'textarea_name' => 'hero_data[chi_siamo][content]',
+                                                'media_buttons' => false,
+                                                'textarea_rows' => 12,
+                                                'teeny'         => true,
+                                                'quicktags'     => true
+                                            )
+                                        );
+                                        ?>
+                                        <p class="description">Scrivi qui la storia e la missione dell'associazione. Il testo apparirà nella pagina "Chi Siamo".</p>
+                                    </td>
+                                </tr>
+                            <?php else: ?>
+                                <tr style="border-bottom: 1px solid #ccc; background-color: #fafafa;"><td colspan="2" style="padding:0;"></td></tr>
+                            <?php endif; ?>
+
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -572,6 +600,11 @@ function santagatesi_process_admin_dashboard_forms() {
                     'subtitle' => isset( $data['subtitle'] ) ? sanitize_textarea_field( wp_unslash( $data['subtitle'] ) ) : '',
                     'bg_image' => isset( $data['bg_image'] ) ? esc_url_raw( wp_unslash( $data['bg_image'] ) ) : '',
                 );
+
+                // Salva il contenuto extra specifico per la pagina "Chi Siamo" se presente
+                if ( $key === 'chi_siamo' && isset( $data['content'] ) ) {
+                    $sanitized_data[$key]['content'] = wp_kses_post( wp_unslash( $data['content'] ) );
+                }
             }
 
             update_option( 'santagatesi_hero_data', $sanitized_data );
