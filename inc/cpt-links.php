@@ -33,7 +33,7 @@ function santagatesi_register_cpt_links() {
 		'label'                 => __( 'Link Utile', 'santagatesi' ),
 		'description'           => __( 'Gestione dei collegamenti esterni', 'santagatesi' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title' ), // SOLO TITOLO. Niente Editor.
+		'supports'              => array( 'title', 'page-attributes' ), // Supporto per Menu Order (Drag & Drop)
 		'hierarchical'          => false,
 		'public'                => true,
 		'show_ui'               => true,

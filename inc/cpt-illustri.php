@@ -33,7 +33,7 @@ function santagatesi_register_cpt_illustri() {
 		'label'                 => __( 'Personaggio Illustre', 'santagatesi' ),
 		'description'           => __( 'Schede dei Santagatesi Illustri', 'santagatesi' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title' ), // SOLO IL TITOLO (NOME). Niente Editor o Thumbnail standard.
+		'supports'              => array( 'title', 'page-attributes' ), // Supporto per Menu Order (Drag & Drop)
 		'hierarchical'          => false,
 		'public'                => true,
 		'show_ui'               => true,

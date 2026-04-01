@@ -91,6 +91,8 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
                         'post_type'      => 'santagatesi_team',
                         'posts_per_page' => -1,
                         'post_status'    => 'publish',
+                        'orderby'        => 'menu_order',
+                        'order'          => 'ASC',
                         'meta_query'     => [
                             [
                                 'key'     => '_visibilita_frontend',

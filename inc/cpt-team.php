@@ -34,7 +34,7 @@ function santagatesi_register_cpt_team() {
 		'label'                 => __( 'Collaboratore', 'santagatesi' ),
 		'description'           => __( 'Gestione del Team e della Redazione', 'santagatesi' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title', 'thumbnail' ), // Nome e Foto
+		'supports'              => array( 'title', 'thumbnail', 'page-attributes' ), // Nome, Foto, e Ordinamento (Drag & Drop)
 		'hierarchical'          => false,
 		'public'                => false, // Non serve pagina singola, mostrati solo in lista
 		'show_ui'               => true,
