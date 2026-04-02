@@ -88,8 +88,9 @@ function santagatesi_hero_settings_callback( $post ) {
 	$is_default = get_post_meta( $post->ID, '_hero_is_default', true );
 
     // Date Trigger (Y-m-d)
-    $date_start = get_post_meta( $post->ID, '_hero_date_start', true );
-    $date_end   = get_post_meta( $post->ID, '_hero_date_end', true );
+    $date_start   = get_post_meta( $post->ID, '_hero_date_start', true );
+    $date_end     = get_post_meta( $post->ID, '_hero_date_end', true );
+    $is_recurring = get_post_meta( $post->ID, '_hero_is_recurring', true );
 
     // Time Trigger (H:i)
     $time_start = get_post_meta( $post->ID, '_hero_time_start', true );
@@ -154,10 +155,14 @@ function santagatesi_hero_settings_callback( $post ) {
             <th><label><strong><?php esc_html_e( 'Priorità 1: Trigger per Data', 'santagatesi' ); ?></strong></label></th>
             <td>
                 <div class="stg-hero-box">
-                    <p style="margin-top:0;"><strong>Dal:</strong> <input type="date" name="hero_date_start" value="<?php echo esc_attr( $date_start ); ?>">
+                    <p style="margin-top:0; margin-bottom:10px;"><strong>Dal:</strong> <input type="date" name="hero_date_start" value="<?php echo esc_attr( $date_start ); ?>">
                        <strong>Al:</strong> <input type="date" name="hero_date_end" value="<?php echo esc_attr( $date_end ); ?>">
                     </p>
-                    <p class="description">Es: Dal 20 Dicembre al 6 Gennaio. Durante questi giorni, questo banner batterà tutte le altre regole e orari.</p>
+                    <label style="display:inline-block; margin-bottom: 5px;">
+                        <input type="checkbox" name="hero_is_recurring" value="1" <?php checked( $is_recurring, '1' ); ?>>
+                        <strong>Ripeti ogni anno</strong>
+                    </label>
+                    <p class="description">Es: Dal 20 Dicembre al 6 Gennaio. Durante questi giorni, questo banner batterà tutte le altre regole e orari. Se attivi "Ripeti ogni anno", l'anno selezionato verrà ignorato (sarà valido per il 20/12 - 06/01 di qualsiasi anno).</p>
                 </div>
             </td>
         </tr>
@@ -245,6 +250,9 @@ function santagatesi_save_dynamic_hero( $post_id ) {
     if ( isset( $_POST['hero_time_start'] ) ) { update_post_meta( $post_id, '_hero_time_start', sanitize_text_field( $_POST['hero_time_start'] ) ); }
     if ( isset( $_POST['hero_time_end'] ) ) { update_post_meta( $post_id, '_hero_time_end', sanitize_text_field( $_POST['hero_time_end'] ) ); }
 
+    $is_recurring = isset( $_POST['hero_is_recurring'] ) ? '1' : '0';
+    update_post_meta( $post_id, '_hero_is_recurring', $is_recurring );
+
 	// Logica Esclusiva del Default: Se questo è 1, tutti gli altri diventano 0
 	$is_default = isset( $_POST['hero_is_default'] ) ? '1' : '0';
     if ( $is_default === '1' ) {
@@ -303,6 +311,7 @@ function santagatesi_rebuild_hero_cache() {
             if ( !empty($d_start) && !empty($d_end) ) {
                 $payload['start'] = $d_start;
                 $payload['end']   = $d_end;
+                $payload['recurring'] = get_post_meta( $id, '_hero_is_recurring', true ) === '1' ? true : false;
                 $cache_rules['date_triggers'][] = $payload;
                 continue; // Se è un evento datato, non lo valutiamo per l'orario generico (mutuamente esclusivo per logica richiesta)
             }
@@ -354,9 +363,29 @@ function get_dynamic_hero() {
     // --- PRIORITÀ 1: DATE TRIGGERS ---
     if ( !empty( $rules['date_triggers'] ) ) {
         foreach ( $rules['date_triggers'] as $banner ) {
-            // Controlla se la data odierna cade in mezzo (compresi start ed end)
-            if ( $today_date >= $banner['start'] && $today_date <= $banner['end'] ) {
-                return $banner; // Match trovato! Restituisci e blocca.
+
+            if ( !empty($banner['recurring']) ) {
+                // Logica "Ripeti ogni anno" (Ignora l'anno, controlla solo mese-giorno)
+                $today_md = $now->format('m-d'); // es: 12-25
+                $start_md = substr($banner['start'], 5); // Estrae MM-DD
+                $end_md   = substr($banner['end'], 5);   // Estrae MM-DD
+
+                if ( $start_md > $end_md ) {
+                    // Evento a cavallo di fine anno (es. 12-20 -> 01-06)
+                    if ( $today_md >= $start_md || $today_md <= $end_md ) {
+                        return $banner;
+                    }
+                } else {
+                    // Evento normale nello stesso anno (es. 04-01 -> 04-15)
+                    if ( $today_md >= $start_md && $today_md <= $end_md ) {
+                        return $banner;
+                    }
+                }
+            } else {
+                // Logica Data Esatta (Anno compreso)
+                if ( $today_date >= $banner['start'] && $today_date <= $banner['end'] ) {
+                    return $banner; // Match trovato! Restituisci e blocca.
+                }
             }
         }
     }
