@@ -46,26 +46,28 @@ Se preferisci non appesantire il database di WordPress con un plugin e vuoi mass
 
 *Attenzione: Inserisci queste regole PRIMA dei tag `# BEGIN WordPress`.*
 
-### Esempio 1: Redirect di vecchie pagine statiche
-```apache
-Redirect 301 /chi-siamo.html https://www.santagatesinelmondo.it/chi-siamo/
-Redirect 301 /contatti.php https://www.santagatesinelmondo.it/contatti/
-```
+### Esempio 1: Redirect di vecchie pagine principali (Index/Archive)
+Se devi semplicemente reindirizzare la pagina principale che raccoglieva tutti i personaggi (es. da `https://www.santagatesinelmondo.it/santagatesi_illustri.asp` verso il nuovo archivio in staging `https://lnx.santagatesinelmondo.it/older/wordpress/santagatesi-illustri/`), la regola diretta in cima al file `.htaccess` del vecchio sito è:
 
-### Esempio 2: Redirect tramite Query String (ID Articoli)
-Se devi reindirizzare `news.php?id=123` a `/il-mio-articolo/`, la direttiva `Redirect 301` standard non funziona perché c'è un punto interrogativo (Query String). Devi usare `mod_rewrite`:
+```apache
+Redirect 301 /santagatesi_illustri.asp https://lnx.santagatesinelmondo.it/older/wordpress/santagatesi-illustri/
+```
+*(Nota: Quando poi sposterai WordPress sul dominio principale togliendo `/older/wordpress/`, modificherai semplicemente il link di arrivo nell'htaccess in `https://www.santagatesinelmondo.it/santagatesi-illustri/`).*
+
+### Esempio 2: Redirect di schede specifiche tramite Query String (es. Pagine Singole Personaggio)
+Se sul vecchio sito ogni personaggio aveva una sua pagina singola generata via `.asp` (ad esempio `santagatesi_illustri.asp?id=12`), la direttiva `Redirect 301` standard *non funziona* perché c'è un punto interrogativo (Query String). Devi usare `mod_rewrite` nel file `.htaccess`:
 
 ```apache
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
-# Redirect del vecchio articolo ID 123
-RewriteCond %{QUERY_STRING} ^id=123$ [NC]
-RewriteRule ^news\.php$ /il-mio-nuovo-articolo/? [R=301,L]
+# Redirect della vecchia scheda di "Tony Santagata" (ID 12) verso la nuova pagina WP
+RewriteCond %{QUERY_STRING} ^id=12$ [NC]
+RewriteRule ^santagatesi_illustri\.asp$ https://lnx.santagatesinelmondo.it/older/wordpress/personaggio-illustre/tony-santagata/? [R=301,L]
 
-# Redirect del vecchio articolo ID 124
-RewriteCond %{QUERY_STRING} ^id=124$ [NC]
-RewriteRule ^news\.php$ /un-altro-articolo/? [R=301,L]
+# Redirect della vecchia scheda di un altro personaggio (ID 15)
+RewriteCond %{QUERY_STRING} ^id=15$ [NC]
+RewriteRule ^santagatesi_illustri\.asp$ https://lnx.santagatesinelmondo.it/older/wordpress/personaggio-illustre/antonio-ricci/? [R=301,L]
 
 </IfModule>
 ```

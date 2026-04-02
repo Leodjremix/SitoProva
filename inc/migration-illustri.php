@@ -31,14 +31,14 @@ function santagatesi_run_illustri_migration() {
         array(
             'nome' => 'Tony Santagata',
             'descrizione' => 'Cantante e cabarettista noto in tutta Italia.',
-            'foto_url' => 'https://www.vecchiosito.it/uploads/tonysantagata.jpg',
-            'vecchio_url' => '/personaggi.php?id=12' // La vecchia stringa o permalink da reindirizzare
+            'foto_url' => 'https://www.santagatesinelmondo.it/public/illustri/tony-santagata.jpg', // Sostituire con path reali
+            'vecchio_url' => '/santagatesi_illustri.asp?id=12' // La vecchia stringa o permalink da reindirizzare
         ),
         array(
             'nome' => 'Antonio Ricci',
             'descrizione' => 'Celebre studioso e filantropo.',
-            'foto_url' => 'https://www.vecchiosito.it/uploads/antonio.jpg',
-            'vecchio_url' => '/personaggi.php?id=15'
+            'foto_url' => 'https://www.santagatesinelmondo.it/public/illustri/antonio-ricci.jpg',
+            'vecchio_url' => '/santagatesi_illustri.asp?id=15'
         ),
     );
 
@@ -122,7 +122,7 @@ function santagatesi_seo_fallback_redirect() {
         return;
     }
 
-    // Ricostruiamo l'URI che l'utente sta cercando di visitare (es. /personaggi.php?id=12)
+    // Ricostruiamo l'URI che l'utente sta cercando di visitare (es. /santagatesi_illustri.asp?id=12)
     $requested_url = $_SERVER['REQUEST_URI'];
 
     // Evitiamo query inutili in homepage
