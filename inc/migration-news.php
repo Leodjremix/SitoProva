@@ -28,23 +28,37 @@ function santagatesi_run_news_migration() {
         wp_die( 'Non sei autorizzato a eseguire migrazioni.' );
     }
 
-    global $wpdb;
+    // Parametri connessione al DB legacy (Stesso Server, Stesso Utente, Stessa Password, ma NOME DB DIVERSO)
+    // Sostituire con il nome esatto del DB (es. Sql123456_1)
+    $legacy_db_name = 'INSERISCI_QUI_IL_NOME_DEL_VECCHIO_DB_ES_SQL12345_1';
 
-    // A. Lettura dei vecchi articoli
-    // Usa $wpdb->get_results per pescare dalla vecchia tabella 'tbl_articoli'
-    // Limita o usa l'offset (es. LIMIT 0, 50) se hai migliaia di record per evitare timeout del server
-    $old_articles = $wpdb->get_results( "SELECT * FROM tbl_articoli ORDER BY id_art ASC LIMIT 100", ARRAY_A );
+    // Creiamo una nuova istanza nativa della classe wpdb per il database esterno
+    $legacy_db = new wpdb( DB_USER, DB_PASSWORD, $legacy_db_name, DB_HOST );
+
+    // Controllo errori di connessione al db esterno
+    if ( ! empty( $legacy_db->error ) ) {
+        wp_die( 'Impossibile connettersi al vecchio database: ' . esc_html( $legacy_db->error->get_error_message() ) );
+    }
+
+    // A. Lettura dei vecchi articoli dal SECONDO DATABASE
+    // Troviamo l'ultimo ID importato con successo per far avanzare la query batch (100 in 100)
+    $last_imported_id = get_option( 'stg_last_imported_news_id', 0 );
+
+    // Usa $legacy_db->get_results invece di $wpdb
+    $old_articles = $legacy_db->get_results( $legacy_db->prepare(
+        "SELECT * FROM tbl_articoli WHERE id_art > %d ORDER BY id_art ASC LIMIT 100",
+        $last_imported_id
+    ), ARRAY_A );
 
     if ( empty( $old_articles ) ) {
-        wp_die( 'Nessun articolo trovato in tbl_articoli o tabella inesistente.' );
+        wp_die( 'La query è vuota: nessun articolo da importare rimasto o la tabella `tbl_articoli` non esiste nel db specificato.' );
     }
 
     $count = 0;
 
     foreach ( $old_articles as $art ) {
 
-        // B. Controllo Duplicati
-        // Verifichiamo se l'articolo è già stato importato cercando il vecchio ID nei meta di WP
+        // B. Controllo Duplicati nel DB WordPress
         $esiste = get_posts(array(
             'post_type'  => 'post',
             'meta_key'   => '_vecchio_id',
@@ -64,9 +78,8 @@ function santagatesi_run_news_migration() {
             $content = '<p class="lead italic text-lg text-gray-600 mb-6">' . wp_kses_post( $art['sotto'] ) . '</p>' . $content;
         }
 
-        // Cerca gli allegati associati a questo articolo (idd = id_art e tipo = 1)
-        // Nota: Assumi che il nome del file salvato nel db sia nella colonna 'nome_file'
-        $allegati = $wpdb->get_results( $wpdb->prepare(
+        // Cerca gli allegati associati a questo articolo nel DB LEGACY (idd = id_art e tipo = 1)
+        $allegati = $legacy_db->get_results( $legacy_db->prepare(
             "SELECT * FROM tbl_allegati WHERE idd = %d AND tipo = 1",
             $art['id_art']
         ), ARRAY_A );
@@ -131,6 +144,9 @@ function santagatesi_run_news_migration() {
             if ( ! empty( $art['video'] ) ) {
                 update_post_meta( $post_id, '_news_video', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
             }
+
+            // Registriamo qual è l'ultimo ID importato con successo per far avanzare il batch al prossimo avvio
+            update_option( 'stg_last_imported_news_id', intval( $art['id_art'] ) );
 
             $count++;
         }
