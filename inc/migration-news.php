@@ -55,8 +55,18 @@ function santagatesi_run_news_migration() {
     }
 
     $count = 0;
+    $updated = 0;
 
     foreach ( $old_articles as $art ) {
+
+        // Risoluzione problema di codifica caratteri tipico dei DB Classic ASP (Windows-1252/ISO-8859-1 -> UTF-8)
+        // L'utilizzo di 'auto' fallisce per i DB europei, bisogna specificare esplicitamente Windows-1252/ISO.
+        $safe_title   = mb_convert_encoding( $art['titolo'], 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252' );
+        $safe_content = mb_convert_encoding( $art['articolo'], 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252' );
+        $safe_sotto   = mb_convert_encoding( $art['sotto'], 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252' );
+        $safe_dida1   = isset($art['dida1']) ? mb_convert_encoding( $art['dida1'], 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252' ) : '';
+        $safe_dida2   = isset($art['dida2']) ? mb_convert_encoding( $art['dida2'], 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252' ) : '';
+        $safe_dida3   = isset($art['dida3']) ? mb_convert_encoding( $art['dida3'], 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252' ) : '';
 
         // B. Controllo Duplicati nel DB WordPress
         $esiste = get_posts(array(
@@ -66,12 +76,8 @@ function santagatesi_run_news_migration() {
             'fields'     => 'ids' // Query leggera
         ));
 
-        if ( ! empty( $esiste ) ) {
-            continue; // L'articolo esiste già, saltiamo
-        }
-
         // C. Gestione Contenuto e Allegati
-        $content = $art['articolo'];
+        $final_content = $safe_content;
 
         // Cerca gli allegati associati a questo articolo nel DB LEGACY (idd = id_art e tipo = 1)
         $allegati = $legacy_db->get_results( $legacy_db->prepare(
@@ -80,30 +86,42 @@ function santagatesi_run_news_migration() {
         ), ARRAY_A );
 
         if ( ! empty( $allegati ) ) {
-            $content .= '<div class="allegati-box mt-8 p-6 bg-blue-50 border border-blue-100 rounded-xl">';
-            $content .= '<h4 class="text-xl font-bold text-blue-900 mb-4">Allegati da Scaricare:</h4>';
-            $content .= '<ul class="list-disc pl-5 space-y-2">';
+            $final_content .= '<div class="allegati-box mt-8 p-6 bg-blue-50 border border-blue-100 rounded-xl">';
+            $final_content .= '<h4 class="text-xl font-bold text-blue-900 mb-4">Allegati da Scaricare:</h4>';
+            $final_content .= '<ul class="list-disc pl-5 space-y-2">';
             foreach ( $allegati as $all ) {
-                // Genera l'URL assoluto del vecchio allegato
-                // (Assicurati che la colonna del nome file si chiami 'nome_file' o cambiala di conseguenza)
                 $nome_file = isset($all['nome_file']) ? $all['nome_file'] : $all['file'];
-                $allegato_url = home_url( '/public/allegati/' . $nome_file );
-                $content .= '<li><a href="' . esc_url( $allegato_url ) . '" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:underline font-semibold">' . esc_html( $nome_file ) . '</a></li>';
+                // Assicuriamoci che anche i nomi file allegati siano ben encodati
+                $safe_nome_file = mb_convert_encoding( $nome_file, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252' );
+                $allegato_url = home_url( '/public/allegati/' . $safe_nome_file );
+                $final_content .= '<li><a href="' . esc_url( $allegato_url ) . '" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:underline font-semibold">' . esc_html( $safe_nome_file ) . '</a></li>';
             }
-            $content .= '</ul></div>';
+            $final_content .= '</ul></div>';
         }
 
-        // D. Creazione del Post in WordPress
         $post_data = array(
-            'post_title'    => wp_strip_all_tags( $art['titolo'] ),
-            'post_content'  => wp_kses_post( $content ),
+            'post_title'    => wp_strip_all_tags( $safe_title ),
+            'post_content'  => wp_kses_post( $final_content ),
             'post_status'   => 'publish',
-            'post_type'     => 'post', // Standard WordPress News
-            'post_date'     => date('Y-m-d H:i:s', strtotime($art['data'])), // Mantiene la data storica
-            'post_author'   => get_current_user_id() // Oppure mappare dinamicamente da tbl_autori
+            'post_type'     => 'post',
+            'post_date'     => date('Y-m-d H:i:s', strtotime($art['data'])),
+            'post_author'   => get_current_user_id()
         );
 
-        $post_id = wp_insert_post( $post_data );
+        if ( ! empty( $esiste ) ) {
+            // L'articolo esiste già. AGGIORNIAMO il contenuto invece di saltarlo.
+            // Questo risolve il problema dei post importati in precedenza che risultavano vuoti per via dell'errore di codifica.
+            $post_id = $esiste[0];
+            $post_data['ID'] = $post_id; // Passiamo l'ID esistente per forzare l'aggiornamento
+            wp_update_post( $post_data );
+            $updated++;
+        } else {
+            // È un nuovo post, crealo.
+            $post_id = wp_insert_post( $post_data );
+            if ( ! is_wp_error( $post_id ) ) {
+                $count++;
+            }
+        }
 
         if ( ! is_wp_error( $post_id ) ) {
 
@@ -111,7 +129,19 @@ function santagatesi_run_news_migration() {
             update_post_meta( $post_id, '_vecchio_id', intval( $art['id_art'] ) );
             update_post_meta( $post_id, '_vecchio_cat', intval( $art['cat'] ) );
 
-            update_post_meta( $post_id, '_news_subtitle', sanitize_textarea_field( $art['sotto'] ) );
+            update_post_meta( $post_id, '_news_subtitle', sanitize_textarea_field( $safe_sotto ) );
+
+            // Gestione didascalie
+            update_post_meta( $post_id, '_news_dida_1', sanitize_text_field( $safe_dida1 ) );
+            update_post_meta( $post_id, '_news_dida_2', sanitize_text_field( $safe_dida2 ) );
+            update_post_meta( $post_id, '_news_dida_3', sanitize_text_field( $safe_dida3 ) );
+
+            // Gestione video (Sideload opzionale o semplice url linking)
+            if ( ! empty( $art['video'] ) ) {
+                update_post_meta( $post_id, '_news_video_url', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
+            } else {
+                update_post_meta( $post_id, '_news_video_url', '' );
+            }
 
             // Gestione video (Sideload opzionale o semplice url linking)
             if ( ! empty( $art['video'] ) ) {
@@ -155,7 +185,8 @@ function santagatesi_run_news_migration() {
     }
 
     echo "<h1>Migrazione News Completata (Batch)</h1>";
-    echo "<p>Importati {$count} articoli in WordPress.</p>";
+    echo "<p>Creati {$count} nuovi articoli in WordPress.</p>";
+    echo "<p>Aggiornati/Riparati {$updated} articoli esistenti (Risolto bug contenuti vuoti).</p>";
     echo "<a href='" . admin_url('edit.php') . "' style='padding: 10px 20px; background: #00529B; color: white; text-decoration: none; border-radius: 5px;'>Torna alla Bacheca</a>";
     die();
 }
