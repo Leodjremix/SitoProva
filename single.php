@@ -50,7 +50,16 @@ get_header();
 
                         <?php the_title( '<h1 class="single-title text-[var(--color-primary)] font-display font-extrabold">', '</h1>' ); ?>
 
-                        <div class="mt-4 text-[var(--color-on-surface-muted)] text-base font-body flex items-center justify-center gap-2">
+                        <?php
+                        $subtitle = get_post_meta( get_the_ID(), '_news_subtitle', true );
+                        if ( ! empty( $subtitle ) ) :
+                        ?>
+                            <div class="news-subtitle mt-4 text-xl md:text-2xl text-[var(--color-on-surface-muted)] font-body font-medium italic border-l-4 border-[var(--color-accent)] pl-6 text-left max-w-3xl mx-auto leading-relaxed">
+                                <?php echo wp_kses_post( $subtitle ); ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="mt-8 text-[var(--color-on-surface-muted)] text-base font-body flex items-center justify-center gap-2">
                             <span>Di <strong><?php the_author(); ?></strong></span>
                             <?php if ( get_comments_number() ) : ?>
                                 <span class="mx-2">&bull;</span>
@@ -67,7 +76,80 @@ get_header();
 					<div class="entry-content prose prose-lg prose-blue max-w-none font-body text-lg leading-loose text-[var(--color-on-surface)]">
 						<?php
 						the_content();
+                        ?>
+                    </div>
 
+                    <?php
+                    // Recupero i dati media extra e didascalie
+                    $extra_img = get_post_meta( get_the_ID(), '_news_extra_image', true );
+                    $video_url = get_post_meta( get_the_ID(), '_news_video_url', true );
+                    $dida_1    = get_post_meta( get_the_ID(), '_news_dida_1', true );
+                    $dida_2    = get_post_meta( get_the_ID(), '_news_dida_2', true );
+                    $dida_3    = get_post_meta( get_the_ID(), '_news_dida_3', true );
+
+                    // Mostra Video Player se presente
+                    if ( ! empty( $video_url ) ) :
+                        // Se è un video YouTube/Vimeo, wp_oembed_get lo incapsula in un iframe nativo
+                        $embed = wp_oembed_get( $video_url );
+                    ?>
+                        <div class="news-video-container mt-12 mb-8 rounded-2xl overflow-hidden shadow-lg bg-[var(--color-surface-container-low)]">
+                            <?php if ( $embed ) : ?>
+                                <div class="aspect-video w-full">
+                                    <?php echo $embed; ?>
+                                </div>
+                            <?php else : ?>
+                                <!-- Fallback selettivo per video MP4 nativi o URL non supportati da oEmbed -->
+                                <video controls class="w-full rounded-2xl shadow-sm">
+                                    <source src="<?php echo esc_url( $video_url ); ?>" type="video/mp4">
+                                    Il tuo browser non supporta il tag video. <a href="<?php echo esc_url( $video_url ); ?>">Scarica il video qui</a>.
+                                </video>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php
+                    // Mostra Immagine Extra se presente
+                    if ( ! empty( $extra_img ) ) :
+                    ?>
+                        <figure class="news-extra-image mt-12 mb-8">
+                            <img src="<?php echo esc_url( $extra_img ); ?>" alt="Immagine aggiuntiva" class="w-full rounded-2xl shadow-[var(--shadow-ambient)]">
+                        </figure>
+                    <?php endif; ?>
+
+                    <?php
+                    // Mostra Sezione Didascalie se almeno una è presente
+                    if ( ! empty( $dida_1 ) || ! empty( $dida_2 ) || ! empty( $dida_3 ) ) :
+                    ?>
+                        <div class="news-didascalie-box mt-16 p-8 bg-blue-50 border-l-4 border-[var(--color-primary)] rounded-r-2xl text-[var(--color-on-surface)] font-body">
+                            <h4 class="text-lg font-bold text-[var(--color-primary)] mb-4 font-display flex items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                Note e Approfondimenti
+                            </h4>
+                            <ul class="space-y-3">
+                                <?php if ( ! empty( $dida_1 ) ) : ?>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-[var(--color-accent)] mt-1">&bull;</span>
+                                        <span><?php echo wp_kses_post( $dida_1 ); ?></span>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ( ! empty( $dida_2 ) ) : ?>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-[var(--color-accent)] mt-1">&bull;</span>
+                                        <span><?php echo wp_kses_post( $dida_2 ); ?></span>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ( ! empty( $dida_3 ) ) : ?>
+                                    <li class="flex items-start gap-2">
+                                        <span class="text-[var(--color-accent)] mt-1">&bull;</span>
+                                        <span><?php echo wp_kses_post( $dida_3 ); ?></span>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="mt-8">
+						<?php
 						wp_link_pages(
 							array(
 								'before' => '<div class="page-links">' . esc_html__( 'Pages:', 'santagatesi' ),

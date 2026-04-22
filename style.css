@@ -491,7 +491,7 @@ body {
 .hamburger-icon .line-3.-rotate-45 { transform: rotate(-45deg) translate(5px, -6px); }
 
 /* -------------------------------------------------------------------------- */
-/* Single Post Layout
+/* Single Post Layout & News Media
 /* -------------------------------------------------------------------------- */
 
 .single-hero-image {
@@ -517,6 +517,19 @@ body {
 
 @media (min-width: 768px) {
     .single-title { font-size: 3.5rem; }
+}
+
+/* Extra elements (Video & Didascalie) imported from ASP */
+.news-video-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: var(--radius-md);
+}
+
+.news-didascalie-box li {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--color-on-surface-muted);
 }
 
 .author-box {

@@ -73,11 +73,6 @@ function santagatesi_run_news_migration() {
         // C. Gestione Contenuto e Allegati
         $content = $art['articolo'];
 
-        // Accoda il sottotitolo all'inizio del contenuto (opzionale, formattato in corsivo)
-        if ( ! empty( $art['sotto'] ) ) {
-            $content = '<p class="lead italic text-lg text-gray-600 mb-6">' . wp_kses_post( $art['sotto'] ) . '</p>' . $content;
-        }
-
         // Cerca gli allegati associati a questo articolo nel DB LEGACY (idd = id_art e tipo = 1)
         $allegati = $legacy_db->get_results( $legacy_db->prepare(
             "SELECT * FROM tbl_allegati WHERE idd = %d AND tipo = 1",
@@ -112,11 +107,23 @@ function santagatesi_run_news_migration() {
 
         if ( ! is_wp_error( $post_id ) ) {
 
-            // E. Salva il Vecchio ID (Fondamentale per i Redirect 301)
+            // E. Mappatura Dati Specifici nei Custom Fields
             update_post_meta( $post_id, '_vecchio_id', intval( $art['id_art'] ) );
-
-            // Salva anche il vecchio ID Categoria se in futuro vuoi mappare le categorie
             update_post_meta( $post_id, '_vecchio_cat', intval( $art['cat'] ) );
+
+            update_post_meta( $post_id, '_news_subtitle', sanitize_textarea_field( $art['sotto'] ) );
+
+            // Gestione video (Sideload opzionale o semplice url linking)
+            if ( ! empty( $art['video'] ) ) {
+                update_post_meta( $post_id, '_news_video_url', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
+            } else {
+                update_post_meta( $post_id, '_news_video_url', '' );
+            }
+
+            // Gestione didascalie
+            update_post_meta( $post_id, '_news_dida_1', sanitize_text_field( isset($art['dida1']) ? $art['dida1'] : '' ) );
+            update_post_meta( $post_id, '_news_dida_2', sanitize_text_field( isset($art['dida2']) ? $art['dida2'] : '' ) );
+            update_post_meta( $post_id, '_news_dida_3', sanitize_text_field( isset($art['dida3']) ? $art['dida3'] : '' ) );
 
             // F. Importazione Immagine in Evidenza (Featured Image)
             if ( ! empty( $art['img1'] ) ) {
@@ -124,10 +131,7 @@ function santagatesi_run_news_migration() {
                 require_once( ABSPATH . 'wp-admin/includes/file.php' );
                 require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
-                // URL assoluto dell'immagine legacy sul server
                 $img_url = home_url( '/public/news/' . ltrim( $art['img1'], '/' ) );
-
-                // media_sideload_image la scarica, crea le miniature WP e la attacca al post_id
                 $img_id = media_sideload_image( $img_url, $post_id, $art['titolo'], 'id' );
 
                 if ( ! is_wp_error( $img_id ) ) {
@@ -135,17 +139,15 @@ function santagatesi_run_news_migration() {
                 }
             }
 
-            // (Opzionale) Se c'è una seconda immagine, puoi salvarla come meta e usarla nel template
+            // G. Importazione Immagine Extra
             if ( ! empty( $art['img2'] ) ) {
-                update_post_meta( $post_id, '_news_img2', esc_url_raw( home_url( '/public/news/' . ltrim( $art['img2'], '/' ) ) ) );
+                $img2_url = home_url( '/public/news/' . ltrim( $art['img2'], '/' ) );
+                update_post_meta( $post_id, '_news_extra_image', esc_url_raw( $img2_url ) );
+            } else {
+                update_post_meta( $post_id, '_news_extra_image', '' );
             }
 
-            // (Opzionale) Se c'è un video, puoi salvarlo per usarlo al posto dell'immagine
-            if ( ! empty( $art['video'] ) ) {
-                update_post_meta( $post_id, '_news_video', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
-            }
-
-            // Registriamo qual è l'ultimo ID importato con successo per far avanzare il batch al prossimo avvio
+            // Avanzamento Batch
             update_option( 'stg_last_imported_news_id', intval( $art['id_art'] ) );
 
             $count++;
@@ -218,3 +220,54 @@ function santagatesi_news_seo_redirect() {
     }
 }
 add_action( 'template_redirect', 'santagatesi_news_seo_redirect', 5 );
+
+
+/**
+ * 3. SCRIPT DI ALLINEAMENTO META
+ *
+ * Scorre tutti i post esistenti per assicurarsi che abbiano i campi custom
+ * (_news_subtitle, _news_video_url, _news_extra_image, didascalie) creati nel database,
+ * anche se vuoti, per omogeneità strutturale.
+ * Attivabile via: ?run_news_alignment=1
+ */
+function santagatesi_align_news_meta() {
+    if ( ! isset( $_GET['run_news_alignment'] ) || $_GET['run_news_alignment'] !== '1' ) {
+        return;
+    }
+    if ( ! current_user_can( 'administrator' ) ) {
+        wp_die( 'Non sei autorizzato.' );
+    }
+
+    $all_posts = new WP_Query(array(
+        'post_type'      => 'post',
+        'posts_per_page' => -1,
+        'post_status'    => 'any',
+        'fields'         => 'ids' // Molto più leggero sulla RAM
+    ));
+
+    $count = 0;
+    $meta_keys_to_check = array(
+        '_news_subtitle',
+        '_news_video_url',
+        '_news_extra_image',
+        '_news_dida_1',
+        '_news_dida_2',
+        '_news_dida_3'
+    );
+
+    foreach ( $all_posts->posts as $post_id ) {
+        foreach ( $meta_keys_to_check as $meta_key ) {
+            // Add_post_meta restituisce false se la chiave esiste già (grazie al 4° parametro $unique=true)
+            $added = add_post_meta( $post_id, $meta_key, '', true );
+            if ( $added ) {
+                $count++;
+            }
+        }
+    }
+
+    echo "<h1>Allineamento Meta Completato</h1>";
+    echo "<p>Creati {$count} nuovi campi vuoti (struttura standardizzata) nei post esistenti.</p>";
+    echo "<a href='" . admin_url('edit.php') . "' style='padding: 10px 20px; background: #00529B; color: white; text-decoration: none; border-radius: 5px;'>Torna alla Bacheca</a>";
+    die();
+}
+add_action( 'template_redirect', 'santagatesi_align_news_meta', 2 );
