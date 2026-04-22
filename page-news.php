@@ -99,18 +99,33 @@ $inline_style = "background-image: url('" . esc_url( $hero_bg_dynamic ) . "');";
 									</a>
 								</div>
 
-								<!-- Riassunto (Excerpt) -->
-								<div class="normalnewstext text-[var(--color-on-surface-muted)] font-body leading-relaxed mb-6 line-clamp-3">
-									<?php the_excerpt(); ?>
+								<!-- Testo Completo (Content) -->
+								<div class="normalnewstext text-[var(--color-on-surface-muted)] font-body leading-relaxed mb-6">
+									<?php
+                                    // Sostituito the_excerpt() con the_content() per mostrare l'articolo completo nella lista
+                                    the_content();
+                                    ?>
 								</div>
 
-                                <!-- Pulsante Leggi di più (Aggiunta accessibile) -->
-                                <div class="mt-auto pt-4">
-                                    <a href="<?php the_permalink(); ?>" class="inline-flex items-center gap-2 text-sm font-bold text-[var(--color-primary)] hover:text-[var(--color-accent)] transition-colors font-body uppercase tracking-wide group">
-                                        Leggi tutto
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-1"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                                    </a>
-                                </div>
+                                <?php
+                                // Mostra Video Player se presente anche in lista archivio
+                                $video_url = get_post_meta( get_the_ID(), '_news_video_url', true );
+                                if ( ! empty( $video_url ) ) :
+                                    $embed = wp_oembed_get( $video_url );
+                                ?>
+                                    <div class="mt-4 mb-8 rounded-xl overflow-hidden shadow-sm bg-[var(--color-surface-container-low)]">
+                                        <?php if ( $embed ) : ?>
+                                            <div class="aspect-video w-full">
+                                                <?php echo $embed; ?>
+                                            </div>
+                                        <?php else : ?>
+                                            <video controls class="w-full rounded-xl shadow-sm">
+                                                <source src="<?php echo esc_url( $video_url ); ?>" type="video/mp4">
+                                                Il tuo browser non supporta il video.
+                                            </video>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
 
 							</div>
 						</div>
