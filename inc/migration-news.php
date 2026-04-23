@@ -71,7 +71,7 @@ function santagatesi_run_news_migration() {
         // B. Controllo Duplicati nel DB WordPress
         $esiste = get_posts(array(
             'post_type'  => 'post',
-            'meta_key'   => '_vecchio_id',
+            'meta_key'   => '_old_id_art',
             'meta_value' => $art['id_art'],
             'fields'     => 'ids' // Query leggera
         ));
@@ -99,8 +99,24 @@ function santagatesi_run_news_migration() {
             $final_content .= '</ul></div>';
         }
 
+                // Autore mapping
+        $author_id = get_current_user_id();
+        $author_name = '';
+        if ( isset( $art['autore'] ) ) {
+            $author_row = $legacy_db->get_row( $legacy_db->prepare( "SELECT * FROM tbl_autori WHERE id_autore = %d", intval( $art['autore'] ) ), ARRAY_A );
+            if ( ! empty( $author_row ) ) {
+                if ( isset( $author_row['nome'] ) ) {
+                    $author_name = $author_row['nome'];
+                } elseif ( isset( $author_row['autore'] ) ) {
+                    $author_name = $author_row['autore'];
+                } else {
+                    $author_name = reset( $author_row );
+                }
+            }
+        }
+
         $post_data = array(
-            'post_title'    => wp_strip_all_tags( $safe_title ),
+            'post_title'    => $safe_title,
             'post_content'  => wp_kses_post( $final_content ),
             'post_status'   => 'publish',
             'post_type'     => 'post',
@@ -126,9 +142,18 @@ function santagatesi_run_news_migration() {
         if ( ! is_wp_error( $post_id ) ) {
 
             // E. Mappatura Dati Specifici nei Custom Fields
-            update_post_meta( $post_id, '_vecchio_id', intval( $art['id_art'] ) );
-            update_post_meta( $post_id, '_vecchio_cat', intval( $art['cat'] ) );
+                        // Categoria mapping
+            if ( isset( $art['catg'] ) && ! empty( $art['catg'] ) ) {
+                $term = term_exists( $art['catg'], 'category' );
+                if ( ! $term ) {
+                    $term = wp_insert_term( $art['catg'], 'category' );
+                }
+                if ( ! is_wp_error( $term ) && isset( $term['term_taxonomy_id'] ) ) {
+                    wp_set_post_categories( $post_id, array( $term['term_taxonomy_id'] ) );
+                }
+            }
 
+            update_post_meta( $post_id, '_old_id_art', intval( $art['id_art'] ) );
             update_post_meta( $post_id, '_news_subtitle', sanitize_textarea_field( $safe_sotto ) );
 
             // Gestione didascalie
@@ -136,24 +161,10 @@ function santagatesi_run_news_migration() {
             update_post_meta( $post_id, '_news_dida_2', sanitize_text_field( $safe_dida2 ) );
             update_post_meta( $post_id, '_news_dida_3', sanitize_text_field( $safe_dida3 ) );
 
-            // Gestione video (Sideload opzionale o semplice url linking)
-            if ( ! empty( $art['video'] ) ) {
-                update_post_meta( $post_id, '_news_video_url', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
-            } else {
-                update_post_meta( $post_id, '_news_video_url', '' );
+                        // Salva autore
+            if ( ! empty( $author_name ) ) {
+                update_post_meta( $post_id, '_news_author_name', sanitize_text_field( $author_name ) );
             }
-
-            // Gestione video (Sideload opzionale o semplice url linking)
-            if ( ! empty( $art['video'] ) ) {
-                update_post_meta( $post_id, '_news_video_url', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
-            } else {
-                update_post_meta( $post_id, '_news_video_url', '' );
-            }
-
-            // Gestione didascalie
-            update_post_meta( $post_id, '_news_dida_1', sanitize_text_field( isset($art['dida1']) ? $art['dida1'] : '' ) );
-            update_post_meta( $post_id, '_news_dida_2', sanitize_text_field( isset($art['dida2']) ? $art['dida2'] : '' ) );
-            update_post_meta( $post_id, '_news_dida_3', sanitize_text_field( isset($art['dida3']) ? $art['dida3'] : '' ) );
 
             // F. Importazione Immagine in Evidenza (Featured Image)
             if ( ! empty( $art['img1'] ) ) {
@@ -172,9 +183,9 @@ function santagatesi_run_news_migration() {
             // G. Importazione Immagine Extra
             if ( ! empty( $art['img2'] ) ) {
                 $img2_url = home_url( '/public/news/' . ltrim( $art['img2'], '/' ) );
-                update_post_meta( $post_id, '_news_extra_image', esc_url_raw( $img2_url ) );
+                update_post_meta( $post_id, '_news_extra_image_path', esc_url_raw( $img2_url ) );
             } else {
-                update_post_meta( $post_id, '_news_extra_image', '' );
+                update_post_meta( $post_id, '_news_extra_image_path', '' );
             }
 
             // Avanzamento Batch
@@ -197,7 +208,7 @@ add_action( 'template_redirect', 'santagatesi_run_news_migration', 1 );
  * 2. REDIRECT 301 SEO-SAFE (news.asp?id=X -> /nuovo-permalink/)
  *
  * Intercetta le richieste ai vecchi URL ASP e cerca il nuovo post associato
- * nel database di WordPress usando il postmeta '_vecchio_id'.
+ * nel database di WordPress usando il postmeta '_old_id_art'.
  */
 function santagatesi_news_seo_redirect() {
 
@@ -223,7 +234,7 @@ function santagatesi_news_seo_redirect() {
                 'post_status'    => 'publish',
                 'meta_query'     => array(
                     array(
-                        'key'     => '_vecchio_id',
+                        'key'     => '_old_id_art',
                         'value'   => $vecchio_id,
                         'compare' => '='
                     )
@@ -279,8 +290,10 @@ function santagatesi_align_news_meta() {
     $count = 0;
     $meta_keys_to_check = array(
         '_news_subtitle',
-        '_news_video_url',
-        '_news_extra_image',
+        '_news_video_data',
+        '_news_extra_image_path',
+        '_news_author_name',
+        '_old_id_art',
         '_news_dida_1',
         '_news_dida_2',
         '_news_dida_3'
