@@ -64,23 +64,7 @@ get_header();
                             <?php endif; ?>
                         </div>
                     </div>
-
 				</header>
-
-                <!-- Media Primario -->
-                <?php if ( has_post_thumbnail() ) : ?>
-                <div class="container-reading mx-auto mt-12 px-4">
-                    <figure class="primary-media-container w-full">
-                        <?php the_post_thumbnail( 'full', array( 'class' => 'w-full rounded-2xl shadow-[var(--shadow-ambient)] object-cover' ) ); ?>
-                        <?php if ( ! empty( $dida_1 ) ) : ?>
-                            <figcaption class="mt-4 text-center text-sm md:text-base text-[var(--color-on-surface-muted)] italic font-body">
-                                <?php echo wp_kses_post( $dida_1 ); ?>
-                            </figcaption>
-                        <?php endif; ?>
-                    </figure>
-                </div>
-                <?php endif; ?>
-
 
 
                     <!-- Media Primario -->
@@ -99,9 +83,7 @@ get_header();
 
                 <!-- Contenuto Articolo (max-width per leggibilità) -->
 				<div class="container-reading mx-auto mt-16 px-4">
-
-
-                    <div class="entry-content prose prose-lg prose-blue max-w-none font-body text-lg leading-loose text-[var(--color-on-surface)]">
+					<div class="entry-content prose prose-lg prose-blue max-w-none font-body text-lg leading-loose text-[var(--color-on-surface)]">
 						<?php
 						the_content();
                         ?>
