@@ -41,13 +41,18 @@ function santagatesi_run_news_migration() {
     }
 
     // A. Lettura dei vecchi articoli dal SECONDO DATABASE
-    // Troviamo l'ultimo ID importato con successo per far avanzare la query batch (100 in 100)
+    // Impostiamo il batch size tramite parametro URL, con default 100
+    $batch_size = isset($_GET['batch']) ? intval($_GET['batch']) : 100;
+    if ( $batch_size <= 0 ) $batch_size = 100;
+
+    // Troviamo l'ultimo ID importato con successo per far avanzare la query batch
     $last_imported_id = get_option( 'stg_last_imported_news_id', 0 );
 
     // Usa $legacy_db->get_results invece di $wpdb
     $old_articles = $legacy_db->get_results( $legacy_db->prepare(
-        "SELECT * FROM tbl_articoli WHERE id_art > %d ORDER BY id_art ASC LIMIT 100",
-        $last_imported_id
+        "SELECT * FROM tbl_articoli WHERE id_art > %d ORDER BY id_art ASC LIMIT %d",
+        $last_imported_id,
+        $batch_size
     ), ARRAY_A );
 
     if ( empty( $old_articles ) ) {
@@ -138,16 +143,13 @@ function santagatesi_run_news_migration() {
 
             // Gestione video (Sideload opzionale o semplice url linking)
             if ( ! empty( $art['video'] ) ) {
-                update_post_meta( $post_id, '_news_video_url', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
+                if ( strpos( $art['video'], '<iframe' ) !== false ) {
+                    update_post_meta( $post_id, '_news_video_data', $art['video'] );
+                } else {
+                    update_post_meta( $post_id, '_news_video_data', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
+                }
             } else {
-                update_post_meta( $post_id, '_news_video_url', '' );
-            }
-
-            // Gestione video (Sideload opzionale o semplice url linking)
-            if ( ! empty( $art['video'] ) ) {
-                update_post_meta( $post_id, '_news_video_url', esc_url_raw( home_url( '/public/video/' . ltrim( $art['video'], '/' ) ) ) );
-            } else {
-                update_post_meta( $post_id, '_news_video_url', '' );
+                update_post_meta( $post_id, '_news_video_data', '' );
             }
 
             // Gestione didascalie
